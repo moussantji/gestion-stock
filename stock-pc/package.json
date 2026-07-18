@@ -13,7 +13,8 @@
     "pack:mac": "electron-builder --mac dmg"
   },
   "devDependencies": {
-    "electron": "^33.0.0"
+    "electron": "^33.0.0",
+    "electron-builder": "^26.0.0"
   },
   "build": {
     "appId": "com.stockflow.pc",
