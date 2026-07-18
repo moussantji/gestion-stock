@@ -1,0 +1,30 @@
+{
+  "name": "stockflow-pc",
+  "version": "14.0.0",
+  "description": "StockFlow PC — application de bureau (Electron) de la plateforme StockFlow",
+  "main": "electron/main.js",
+  "author": "StockFlow",
+  "license": "PROPRIETARY",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "pack:win": "electron-builder --win nsis",
+    "pack:linux": "electron-builder --linux AppImage deb",
+    "pack:mac": "electron-builder --mac dmg"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0"
+  },
+  "build": {
+    "appId": "com.stockflow.pc",
+    "productName": "StockFlow",
+    "files": [
+      "electron/**/*",
+      "src/**/*",
+      "package.json"
+    ],
+    "win": { "icon": "electron/icon.ico" },
+    "linux": { "icon": "electron/icon.png", "category": "Office" },
+    "mac": { "icon": "electron/icon.png" }
+  }
+}

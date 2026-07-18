@@ -1,0 +1,73 @@
+================================================================================
+ CORRECTIONS PAGE DE CONNEXION — StockFlow
+================================================================================
+
+⚠️  IMPORTANT : ta page /login (celle de ta capture) NE fait PAS partie des
+    fichiers partagés dans cet espace de travail. Ton installation locale a
+    donc un code différent. Ce pack contient des fichiers PRÊTS À COLLER dans
+    TON projet. Pour une modification chirurgicale de TA page exacte, copie
+    ton fichier login.blade.php dans cet espace et je l'adapterai.
+
+--------------------------------------------------------------------------------
+ÉTAPE 1 — Les icônes (corrige l'erreur console "icon-192.png")
+--------------------------------------------------------------------------------
+Copie ces 8 fichiers depuis  stock-api/public/  vers  TON_PROJET/public/ :
+
+    icon.svg
+    icon-192.png
+    icon-512.png
+    icon-512-maskable.png
+    apple-touch-icon.png
+    favicon.ico
+    favicon-16.png
+    favicon-32.png
+
+--------------------------------------------------------------------------------
+ÉTAPE 2 — Le manifest PWA
+--------------------------------------------------------------------------------
+Ton manifest actuel contient une URL en dur du type  http://localhost/icon-192.png
+(d'où l'erreur console) ou des fichiers absents.
+
+→ Remplace-le par  CORRECTIONS-LOGIN/manifest.webmanifest  (version thème clair,
+  chemins relatifs "/icon-192.png" = fonctionne en local ET en production)
+  dans  TON_PROJET/public/manifest.webmanifest  (ou .json selon ton fichier).
+
+--------------------------------------------------------------------------------
+ÉTAPE 3 — La page de connexion
+--------------------------------------------------------------------------------
+Option A (recommandé) : utilise la nouvelle page
+    Copie  CORRECTIONS-LOGIN/login.blade.php  à l'emplacement de TA vue de
+    connexion, en général  resources/views/auth/login.blade.php
+    (cherche le nom exact dans routes/web.php : la route GET /login).
+    Design identique à ton style (clair, bleu), avec :
+      · coquille corrigée : "Comptes de démonstration" (et non "Comptables")
+      · logo SF intégré (SVG inline) — un seul branding, plus de doublon
+      · clic sur un compte de démo = formulaire pré-rempli
+      · balises icônes + manifest déjà incluses dans le <head>
+
+Option B : garde TA page et corrige juste l'essentiel
+    1. Remplace  Comptables de démonstration  par  Comptes de démonstration
+    2. Ajoute dans le <head> :
+
+        <link rel="icon" type="image/svg+xml" href="{{ asset('icon.svg') }}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32.png') }}">
+        <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
+        <link rel="manifest" href="{{ asset('manifest.webmanifest') }}">
+        <meta name="theme-color" content="#2563eb">
+
+--------------------------------------------------------------------------------
+ÉTAPE 4 — Rafraîchir
+--------------------------------------------------------------------------------
+    php artisan view:clear
+    php artisan optimize:clear
+
+Puis dans le navigateur : Ctrl + F5 (ou Cmd + Maj + R).
+L'erreur manifest dans la console doit disparaître.
+
+--------------------------------------------------------------------------------
+REMARQUE
+--------------------------------------------------------------------------------
+Le petit panneau ⚠️ jaune à côté de "127.0.0.1:8000" dans Chrome = avertissement
+"connexion non sécurisée" (HTTP local). C'est NORMAL en développement, rien à
+corriger. En production (HTTPS avec nom de domaine), il disparaît.
+================================================================================
