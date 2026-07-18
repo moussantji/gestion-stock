@@ -14,7 +14,22 @@
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
 </head>
 <body>
+{{-- ============ BARRE MOBILE (hamburger) ============ --}}
+<header class="admin-topbar">
+    <button class="menu-toggle" type="button" aria-label="Ouvrir le menu"
+            onclick="document.querySelector('.admin-layout').classList.toggle('nav-open')">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+            <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+    </button>
+    <span class="logo"><span class="logo-mark">◆</span> StockFlow</span>
+</header>
+
 <div class="admin-layout">
+
+    {{-- Voile de fermeture du tiroir (mobile) --}}
+    <div class="sidebar-backdrop"
+         onclick="document.querySelector('.admin-layout').classList.remove('nav-open')"></div>
 
     {{-- ============ SIDEBAR ============ --}}
     <aside class="sidebar">
