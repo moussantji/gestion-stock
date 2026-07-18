@@ -3,9 +3,11 @@
 return [
     // ---------- Navigation ----------
     'nav_features' => 'Fonctionnalités',
+    'nav_features_short' => 'Fonctions',
     'nav_pricing' => 'Tarifs',
     'nav_faq' => 'FAQ',
     'nav_check' => 'Mon compte',
+    'nav_check_short' => 'Compte',
     'nav_buy' => 'Acheter un abonnement',
     'nav_home' => 'Accueil',
 

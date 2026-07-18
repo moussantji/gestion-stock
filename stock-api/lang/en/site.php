@@ -3,9 +3,11 @@
 return [
     // ---------- Navigation ----------
     'nav_features' => 'Features',
+    'nav_features_short' => 'Features',
     'nav_pricing' => 'Pricing',
     'nav_faq' => 'FAQ',
     'nav_check' => 'My account',
+    'nav_check_short' => 'Account',
     'nav_buy' => 'Buy a subscription',
     'nav_home' => 'Home',
 
