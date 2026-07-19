@@ -164,13 +164,13 @@ export default function ProfileScreen({ navigation }) {
           <Text style={styles.sectionTitle}>{t('prof_exports')}</Text>
           <View style={styles.menuCard}>
             <MenuItem
-              icon="📦"
+              ionicon="cube-outline"
               label={t('prof_export_products')}
               onPress={() => exportCsv('products')}
               right={exporting === 'products' ? <ActivityIndicator size="small" color={colors.primary} /> : null}
             />
             <MenuItem
-              icon="🔄"
+              ionicon="sync-outline"
               label={t('prof_export_movements')}
               onPress={() => exportCsv('movements')}
               right={exporting === 'movements' ? <ActivityIndicator size="small" color={colors.primary} /> : null}

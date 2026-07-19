@@ -239,7 +239,7 @@ export default function ProductDetailScreen({ route, navigation }) {
           ))
         ) : (
           <EmptyState
-            icon="🔄"
+            ionicon="sync-outline"
             title={isOnline ? t('pd_no_moves') : t('pd_offline_moves')}
           />
         )}

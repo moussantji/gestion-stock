@@ -12,6 +12,7 @@ import {
   View,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import api, { getErrorMessage } from '../api/client';
 import { useNetwork } from '../context/NetworkContext';
 import { useLocale } from '../context/LocaleContext';
@@ -273,7 +274,7 @@ export default function ProductsScreen({ navigation }) {
           style={styles.scanBtn}
           onPress={() => navigation.navigate('Scanner', { mode: 'lookup' })}
         >
-          <Text style={{ fontSize: 18 }}>📷</Text>
+          <Ionicons name="scan-outline" size={20} color={colors.text} />
         </TouchableOpacity>
         {/* 📥 v24 (v2.13) : import CSV en masse (collage direct) */}
         <TouchableOpacity
@@ -281,7 +282,7 @@ export default function ProductsScreen({ navigation }) {
           onPress={() => { setImpText(''); setImpResult(null); setImpOpen(true); }}
           accessibilityLabel={t('imp_open')}
         >
-          <Text style={{ fontSize: 18 }}>📥</Text>
+          <Ionicons name="cloud-upload-outline" size={20} color={colors.text} />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.scanBtn}
@@ -292,7 +293,7 @@ export default function ProductsScreen({ navigation }) {
           {bursting ? (
             <ActivityIndicator size="small" color={colors.primary} />
           ) : (
-            <Text style={{ fontSize: 18, opacity: items.length ? 1 : 0.4 }}>🏷️</Text>
+            <Ionicons name="pricetag-outline" size={20} color={colors.text} style={{ opacity: items.length ? 1 : 0.4 }} />
           )}
         </TouchableOpacity>
         {/* ⚠️🏷️ v17 : rafale limitée aux ruptures de stock (rayon à réassortir) */}
@@ -305,7 +306,7 @@ export default function ProductsScreen({ navigation }) {
           {outLoading ? (
             <ActivityIndicator size="small" color={colors.warning} />
           ) : (
-            <Text style={{ fontSize: 18 }}>🚨</Text>
+            <Ionicons name="alert-circle-outline" size={20} color={colors.warning} />
           )}
         </TouchableOpacity>
       </View>
@@ -359,7 +360,7 @@ export default function ProductsScreen({ navigation }) {
           }
           ListEmptyComponent={
             <EmptyState
-              icon="📦"
+              ionicon="cube-outline"
               title={search ? t('prod_none_search') : t('prod_none')}
               subtitle={search ? `${t('prod_no_match')} « ${search} ».` : t('prod_none_sub')}
             />
@@ -371,7 +372,7 @@ export default function ProductsScreen({ navigation }) {
       )}
 
       <TouchableOpacity style={styles.fab} onPress={() => navigation.navigate('ProductForm', {})}>
-        <Text style={styles.fabText}>＋</Text>
+        <Ionicons name="add" size={30} color="#fff" />
       </TouchableOpacity>
 
       {/* 🏷️ v16 — quantité d'étiquettes par produit (×2 mis en avant : cas courant) ; 📦 v20 : option « stock réel » */}
@@ -397,7 +398,7 @@ export default function ProductsScreen({ navigation }) {
             <View style={styles.impHead}>
               <Text style={styles.impTitle}>📥 {t('imp_title')}</Text>
               <TouchableOpacity onPress={() => setImpOpen(false)}>
-                <Text style={styles.impClose}>✕</Text>
+                <Ionicons name="close" size={22} color={colors.muted} />
               </TouchableOpacity>
             </View>
             <Text style={styles.impHint}>{t('imp_hint')}</Text>
