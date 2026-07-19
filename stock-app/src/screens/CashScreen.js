@@ -355,8 +355,8 @@ export default function CashScreen() {
         }
         ListEmptyComponent={
           view === 'ops'
-            ? <EmptyState icon="💵" title={t('ca_none')} subtitle={t('ca_none_sub')} />
-            : <EmptyState icon="🔒" title={t('cz_none')} subtitle={t('cz_none_sub')} />
+            ? <EmptyState ionicon="cash-outline" title={t('ca_none')} subtitle={t('ca_none_sub')} />
+            : <EmptyState ionicon="lock-closed-outline" title={t('cz_none')} subtitle={t('cz_none_sub')} />
         }
       />
 

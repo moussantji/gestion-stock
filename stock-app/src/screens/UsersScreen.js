@@ -124,7 +124,7 @@ export default function UsersScreen() {
           data={items}
           keyExtractor={(item) => String(item.id)}
           contentContainerStyle={{ padding: 16, paddingBottom: 110 }}
-          ListEmptyComponent={<EmptyState icon="👥" title={t('usr_none')} />}
+          ListEmptyComponent={<EmptyState ionicon="people-outline" title={t('usr_none')} />}
           renderItem={({ item }) => (
             <View style={styles.card}>
               <View style={styles.avatar}>

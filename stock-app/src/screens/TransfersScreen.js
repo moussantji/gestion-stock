@@ -233,7 +233,7 @@ export default function TransfersScreen() {
   if (!allowed) {
     return (
       <View style={styles.container}>
-        <EmptyState icon="🔒" title={t('prof_admin_only')} />
+        <EmptyState ionicon="lock-closed-outline" title={t('prof_admin_only')} />
       </View>
     );
   }
@@ -265,7 +265,7 @@ export default function TransfersScreen() {
           ListHeaderComponent={
             <PrimaryButton title={t('tr_new')} onPress={openCreate} style={{ marginBottom: 14 }} />
           }
-          ListEmptyComponent={<EmptyState icon="🔁" title={t('tr_empty')} subtitle={t('tr_empty_sub')} />}
+          ListEmptyComponent={<EmptyState ionicon="repeat-outline" title={t('tr_empty')} subtitle={t('tr_empty_sub')} />}
           renderItem={({ item }) => {
             const expanded = expandedId === item.id;
             const sm = statusMeta(item.status);

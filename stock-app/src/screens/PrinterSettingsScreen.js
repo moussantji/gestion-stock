@@ -176,7 +176,7 @@ export default function PrinterSettingsScreen() {
             ))}
           </View>
         ) : (
-          <EmptyState icon="🔍" title={t('pr_none_paired')} />
+          <EmptyState ionicon="search-outline" title={t('pr_none_paired')} />
         )
       ) : null}
     </ScrollView>

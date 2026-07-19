@@ -94,7 +94,7 @@ export default function ShopSettingsScreen() {
   if (!hasRole('admin', 'manager')) {
     return (
       <View style={[styles.container, styles.center]}>
-        <EmptyState icon="🔒" title={t('set_forbidden')} />
+        <EmptyState ionicon="lock-closed-outline" title={t('set_forbidden')} />
       </View>
     );
   }

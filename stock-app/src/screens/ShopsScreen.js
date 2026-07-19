@@ -133,7 +133,7 @@ export default function ShopsScreen() {
   if (!hasRole('admin')) {
     return (
       <View style={styles.container}>
-        <EmptyState icon="🔒" title={t('prof_admin_only')} />
+        <EmptyState ionicon="lock-closed-outline" title={t('prof_admin_only')} />
       </View>
     );
   }
@@ -163,7 +163,7 @@ export default function ShopsScreen() {
             />
           }
           ListHeaderComponent={<Text style={styles.disclaimer}>ℹ️ {t('sh_stock_note')}</Text>}
-          ListEmptyComponent={<EmptyState icon="🏬" title={t('sh_empty')} />}
+          ListEmptyComponent={<EmptyState ionicon="storefront-outline" title={t('sh_empty')} />}
           renderItem={({ item }) => (
             <TouchableOpacity style={styles.card} activeOpacity={0.85} onPress={() => openEdit(item)}>
               <View style={styles.iconBox}>

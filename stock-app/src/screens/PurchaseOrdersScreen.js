@@ -436,7 +436,7 @@ export default function PurchaseOrdersScreen() {
             </View>
           }
           ListEmptyComponent={
-            <EmptyState icon="📦" title={t('po_empty')} subtitle={t('po_empty_sub')} />
+            <EmptyState ionicon="cube-outline" title={t('po_empty')} subtitle={t('po_empty_sub')} />
           }
         />
       )}

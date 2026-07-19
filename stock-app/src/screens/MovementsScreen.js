@@ -251,10 +251,10 @@ export default function MovementsScreen({ navigation }) {
           }
           ListEmptyComponent={
             isCredits
-              ? <EmptyState icon="💳" title={t('cr_none')} subtitle={t('cr_none_sub')} />
+              ? <EmptyState ionicon="card-outline" title={t('cr_none')} subtitle={t('cr_none_sub')} />
               : isReceipts
-                ? <EmptyState icon="🧾" title={t('rc_none')} subtitle={t('rc_none_sub')} />
-                : <EmptyState icon="🔄" title={t('mv_none')} subtitle={t('mv_none_sub')} />
+                ? <EmptyState ionicon="receipt-outline" title={t('rc_none')} subtitle={t('rc_none_sub')} />
+                : <EmptyState ionicon="sync-outline" title={t('mv_none')} subtitle={t('mv_none_sub')} />
           }
           ListHeaderComponent={
             isCredits && items.length > 0 ? (

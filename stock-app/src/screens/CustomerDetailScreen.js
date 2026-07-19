@@ -219,12 +219,12 @@ export default function CustomerDetailScreen({ route, navigation }) {
       {stats ? (
         <>
           <View style={styles.grid}>
-            <StatCard icon="🛒" label={t('cu_spent')} value={formatMoney(stats.spent_total)} color={colors.accent} style={{ marginRight: 8 }} />
-            <StatCard icon="🧾" label={t('cu_receipts_count')} value={stats.receipts_count} color={colors.primary} style={{ marginLeft: 8 }} />
+            <StatCard ionicon="cart" label={t('cu_spent')} value={formatMoney(stats.spent_total)} color={colors.accent} style={{ marginRight: 8 }} />
+            <StatCard ionicon="receipt" label={t('cu_receipts_count')} value={stats.receipts_count} color={colors.primary} style={{ marginLeft: 8 }} />
           </View>
           <View style={[styles.grid, { marginTop: 12 }]}>
-            <StatCard icon="💵" label={t('cu_paid')} value={formatMoney(stats.paid_total)} color={colors.success} style={{ marginRight: 8 }} />
-            <StatCard icon="💳" label={t('cu_balance')} value={formatMoney(stats.credit_balance)} color={colors.warning} style={{ marginLeft: 8 }} />
+            <StatCard ionicon="cash" label={t('cu_paid')} value={formatMoney(stats.paid_total)} color={colors.success} style={{ marginRight: 8 }} />
+            <StatCard ionicon="card" label={t('cu_balance')} value={formatMoney(stats.credit_balance)} color={colors.warning} style={{ marginLeft: 8 }} />
           </View>
         </>
       ) : null}
@@ -288,7 +288,7 @@ export default function CustomerDetailScreen({ route, navigation }) {
       {/* ---------- 🧾 Historique d'achats ---------- */}
       <Text style={styles.sectionTitle}>{t('cu_history')}</Text>
       {history.length === 0 ? (
-        <EmptyState icon="🧾" title={t('cu_no_history')} subtitle={t('cu_no_history_sub')} />
+        <EmptyState ionicon="receipt-outline" title={t('cu_no_history')} subtitle={t('cu_no_history_sub')} />
       ) : (
         history.map((r) => {
           const refunded = r.status === 'refunded';

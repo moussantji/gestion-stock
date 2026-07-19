@@ -310,7 +310,7 @@ export default function InventoryCountScreen({ route, navigation }) {
         contentContainerStyle={{ padding: 16, paddingTop: 8, paddingBottom: 60 }}
         renderItem={renderItem}
         ListEmptyComponent={
-          <EmptyState icon="📋" title={t('inv_no_lines')} subtitle={t('inv_no_lines_sub')} />
+          <EmptyState ionicon="clipboard-outline" title={t('inv_no_lines')} subtitle={t('inv_no_lines_sub')} />
         }
       />
     </View>

@@ -157,7 +157,7 @@ export default function DashboardScreen({ navigation }) {
                 </View>
               </>
             ) : (
-              <EmptyState icon="📈" title={t('dash_no_chart')} />
+              <EmptyState ionicon="trending-up-outline" title={t('dash_no_chart')} />
             )}
           </View>
 
@@ -183,7 +183,7 @@ export default function DashboardScreen({ navigation }) {
                 </TouchableOpacity>
               ))
             ) : (
-              <EmptyState icon="🎉" title={t('dash_no_alert')} subtitle={t('dash_no_alert_sub')} />
+              <EmptyState ionicon="sparkles-outline" title={t('dash_no_alert')} subtitle={t('dash_no_alert_sub')} />
             )}
           </View>
 
@@ -205,7 +205,7 @@ export default function DashboardScreen({ navigation }) {
                 </View>
               ))
             ) : (
-              <EmptyState icon="🕐" title={t('dash_no_recent')} />
+              <EmptyState ionicon="time-outline" title={t('dash_no_recent')} />
             )}
           </View>
         </>

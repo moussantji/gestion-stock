@@ -184,7 +184,7 @@ export default function StatsScreen() {
   if (!allowed) {
     return (
       <View style={[styles.container, styles.center]}>
-        <EmptyState icon="🔒" title={t('st_forbidden')} />
+        <EmptyState ionicon="lock-closed-outline" title={t('st_forbidden')} />
       </View>
     );
   }
@@ -411,12 +411,12 @@ export default function StatsScreen() {
         <>
           {/* ---------- Totaux ---------- */}
           <View style={styles.grid}>
-            <StatCard icon="💰" label={t('st_revenue')} value={formatMoney(totals.revenue)} color={colors.success} style={{ marginRight: 8 }} />
-            <StatCard icon="🧾" label={t('st_receipts')} value={totals.receipts} color={colors.primary} style={{ marginLeft: 8 }} />
+            <StatCard ionicon="cash" label={t('st_revenue')} value={formatMoney(totals.revenue)} color={colors.success} style={{ marginRight: 8 }} />
+            <StatCard ionicon="receipt" label={t('st_receipts')} value={totals.receipts} color={colors.primary} style={{ marginLeft: 8 }} />
           </View>
           <View style={[styles.grid, { marginTop: 12 }]}>
-            <StatCard icon="📦" label={t('st_items')} value={totals.items} color={colors.accent} style={{ marginRight: 8 }} />
-            <StatCard icon="🛒" label={t('st_avg')} value={formatMoney(totals.avg_basket)} color={colors.warning} style={{ marginLeft: 8 }} />
+            <StatCard ionicon="cube" label={t('st_items')} value={totals.items} color={colors.accent} style={{ marginRight: 8 }} />
+            <StatCard ionicon="cart" label={t('st_avg')} value={formatMoney(totals.avg_basket)} color={colors.warning} style={{ marginLeft: 8 }} />
           </View>
 
           {/* ---------- VUE PRODUITS ---------- */}
@@ -711,12 +711,12 @@ export default function StatsScreen() {
         ) : margins && marginProducts.length > 0 ? (
           <>
             <View style={styles.grid}>
-              <StatCard icon="💰" label={t('mg_revenue')} value={formatMoney(margins.totals.revenue)} color={colors.success} style={{ marginRight: 8 }} />
-              <StatCard icon="💸" label={t('mg_cost')} value={formatMoney(margins.totals.cost)} color={colors.danger} style={{ marginLeft: 8 }} />
+              <StatCard ionicon="cash" label={t('mg_revenue')} value={formatMoney(margins.totals.revenue)} color={colors.success} style={{ marginRight: 8 }} />
+              <StatCard ionicon="trending-down" label={t('mg_cost')} value={formatMoney(margins.totals.cost)} color={colors.danger} style={{ marginLeft: 8 }} />
             </View>
             <View style={[styles.grid, { marginTop: 12 }]}>
-              <StatCard icon="🏆" label={t('mg_margin')} value={formatMoney(margins.totals.margin)} color={colors.primary} style={{ marginRight: 8 }} />
-              <StatCard icon="📈" label={t('mg_rate')} value={`${margins.totals.rate} %`} color={colors.accent} style={{ marginLeft: 8 }} />
+              <StatCard ionicon="trophy" label={t('mg_margin')} value={formatMoney(margins.totals.margin)} color={colors.primary} style={{ marginRight: 8 }} />
+              <StatCard ionicon="trending-up" label={t('mg_rate')} value={`${margins.totals.rate} %`} color={colors.accent} style={{ marginLeft: 8 }} />
             </View>
 
             <View style={styles.section}>
@@ -757,7 +757,7 @@ export default function StatsScreen() {
             <Text style={styles.marginHint}>{t('mg_hint')}</Text>
           </>
         ) : (
-          <EmptyState icon="💰" title={t('mg_none')} subtitle={t('st_no_sales_sub')} />
+          <EmptyState ionicon="cash-outline" title={t('mg_none')} subtitle={t('st_no_sales_sub')} />
         )}
 
         {/* 📊 v21 (v2.10) : rentabilité mois par mois sur 12 mois glissants (clé additive by_month) */}
@@ -905,7 +905,7 @@ export default function StatsScreen() {
                     </View>
                   ))
                 ) : (
-                  <EmptyState icon="🔄" title={t('pm_empty')} />
+                  <EmptyState ionicon="sync-outline" title={t('pm_empty')} />
                 )}
               </ScrollView>
 

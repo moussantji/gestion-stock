@@ -249,7 +249,7 @@ export default function CustomersScreen({ navigation }) {
             />
           }
           ListEmptyComponent={
-            <EmptyState icon="👥" title={t('cu_none')} subtitle={t('cu_none_sub')} />
+            <EmptyState ionicon="people-outline" title={t('cu_none')} subtitle={t('cu_none_sub')} />
           }
           ListHeaderComponent={
             items.length > 0 ? <Text style={styles.hint}>{t('cu_edit_hint')}</Text> : null

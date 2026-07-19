@@ -122,7 +122,7 @@ export default function CategoriesScreen() {
           data={items}
           keyExtractor={(item) => String(item.id)}
           contentContainerStyle={{ padding: 16, paddingBottom: 110 }}
-          ListEmptyComponent={<EmptyState icon="🏷" title={t('cat_none')} subtitle={t('cat_none_sub')} />}
+          ListEmptyComponent={<EmptyState ionicon="pricetags-outline" title={t('cat_none')} subtitle={t('cat_none_sub')} />}
           renderItem={({ item }) => (
             <TouchableOpacity style={styles.card} onPress={() => openEdit(item)}>
               <View style={styles.iconWrap}><Text style={{ fontSize: 18 }}>🏷</Text></View>
