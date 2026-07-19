@@ -7,12 +7,6 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
-    "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#0B0B12"
-    },
     "assetBundlePatterns": [
       "**/*"
     ],
@@ -45,7 +39,15 @@
           "photosPermission": "StockFlow accède à vos photos pour illustrer les fiches produits."
         }
       ],
-      "expo-notifications"
+      "expo-notifications",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#0B0B12"
+        }
+      ]
     ]
   }
 }

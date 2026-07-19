@@ -1,6 +1,6 @@
 import * as Notifications from 'expo-notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Constants from 'expo-constants';
+import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { Platform } from 'react-native';
 import api from '../api/client';
 
@@ -19,8 +19,8 @@ const PUSH_TOKEN_KEY = 'expo_push_token';
 // Affiche les notifications même quand l'app est ouverte
 try {
   Notifications.setNotificationHandler({
+    // shouldShowAlert supprimé (déprécié SDK 53+) → remplacé par shouldShowBanner + shouldShowList
     handleNotification: async () => ({
-      shouldShowAlert: true,
       shouldPlaySound: false,
       shouldSetBadge: true,
       shouldShowBanner: true,
@@ -71,7 +71,12 @@ export async function scheduleLicenseReminders(expiringLicenses, notifTitle, not
             body: notifBodyFn(license, daysBefore),
             data: { licenseKey: license.key },
           },
-          trigger: { seconds, channelId: 'licenses' },
+          // SDK 53+ : le trigger doit être typé (l'ancien raccourci { seconds } est déprécié)
+          trigger: {
+            type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+            seconds,
+            channelId: 'licenses',
+          },
         });
       }
     }
@@ -98,6 +103,12 @@ export async function scheduleLicenseReminders(expiringLicenses, notifTitle, not
  */
 export async function registerPushToken() {
   try {
+    // 🚫 Expo Go (SDK 53+) : les push distantes n'y sont plus supportées.
+    // On n'appelle PAS getExpoPushTokenAsync pour éviter le warning ; il faut un dev build/APK.
+    if (Constants.executionEnvironment === ExecutionEnvironment.StoreClient) {
+      return;
+    }
+
     const granted = await ensurePermission();
     if (!granted) return;
 
