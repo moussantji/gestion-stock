@@ -12,6 +12,7 @@ import {
   View,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import api, { getErrorMessage } from '../api/client';
 import { SERVER_URL } from '../config';
@@ -280,7 +281,7 @@ export default function AdminScreen() {
               <Image source={{ uri: shop.logo_url }} style={styles.logoPreview} />
             ) : (
               <View style={[styles.logoPreview, styles.logoPlaceholder]}>
-                <Text style={{ fontSize: 24 }}>🏪</Text>
+                <Ionicons name="storefront" size={26} color={colors.muted} />
               </View>
             )}
             <View style={{ flex: 1, marginLeft: 12 }}>

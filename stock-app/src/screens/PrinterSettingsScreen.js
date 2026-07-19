@@ -9,6 +9,7 @@ import {
   View,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import api, { getErrorMessage } from '../api/client';
 import { useLocale } from '../context/LocaleContext';
 import { colors } from '../theme/colors';
@@ -103,7 +104,7 @@ export default function PrinterSettingsScreen() {
       {/* Module natif absent (Expo Go) */}
       {!available ? (
         <View style={styles.warningCard}>
-          <Text style={{ fontSize: 26 }}>⚠️</Text>
+          <Ionicons name="warning-outline" size={26} color={colors.warning} />
           <View style={{ flex: 1, marginLeft: 10 }}>
             <Text style={styles.warningTitle}>{t('pr_unavailable')}</Text>
             <Text style={styles.warningText}>{t('pr_unavailable_msg')}</Text>
@@ -117,7 +118,7 @@ export default function PrinterSettingsScreen() {
         {saved ? (
           <View style={styles.savedRow}>
             <View style={styles.printerIcon}>
-              <Text style={{ fontSize: 20 }}>🖨</Text>
+              <Ionicons name="print" size={22} color={colors.primary} />
             </View>
             <View style={{ flex: 1 }}>
               <Text style={styles.savedName}>{saved.name}</Text>
@@ -162,7 +163,7 @@ export default function PrinterSettingsScreen() {
                 onPress={() => pick(d)}
                 disabled={!!connectingTo}
               >
-                <Text style={{ fontSize: 18 }}>🖨</Text>
+                <Ionicons name="print-outline" size={20} color={colors.text} />
                 <View style={{ flex: 1, marginLeft: 10 }}>
                   <Text style={styles.deviceName}>{d.name}</Text>
                   <Text style={styles.deviceMac}>{d.address}</Text>
@@ -170,7 +171,7 @@ export default function PrinterSettingsScreen() {
                 {connectingTo === d.address ? (
                   <ActivityIndicator size="small" color={colors.primary} />
                 ) : saved?.address === d.address ? (
-                  <Text style={{ color: colors.success, fontWeight: '800' }}>✓</Text>
+                  <Ionicons name="checkmark-circle" size={19} color={colors.success} />
                 ) : null}
               </TouchableOpacity>
             ))}

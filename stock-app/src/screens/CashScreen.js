@@ -14,6 +14,7 @@ import {
   View,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as SecureStore from 'expo-secure-store';
 import * as Sharing from 'expo-sharing';
@@ -200,7 +201,7 @@ export default function CashScreen() {
   const renderClosing = ({ item }) => (
     <View style={styles.row}>
       <View style={[styles.iconBadge, { backgroundColor: colors.infoBg }]}>
-        <Text style={{ fontSize: 16 }}>🔒</Text>
+        <Ionicons name="lock-closed" size={18} color={colors.info} />
       </View>
       <View style={{ flex: 1 }}>
         <Text style={styles.reason}>{formatDateTime(item.closing_date)}</Text>
@@ -238,7 +239,7 @@ export default function CashScreen() {
     return (
       <TouchableOpacity style={styles.row} activeOpacity={0.85} onLongPress={() => confirmDelete(item)}>
         <View style={[styles.iconBadge, { backgroundColor: isIn ? colors.successBg : colors.dangerBg }]}>
-          <Text style={{ fontSize: 16 }}>{isIn ? '⬇️' : '⬆️'}</Text>
+          <Ionicons name={isIn ? 'arrow-down' : 'arrow-up'} size={18} color={isIn ? colors.success : colors.danger} />
         </View>
         <View style={{ flex: 1 }}>
           <Text style={styles.reason} numberOfLines={1}>{item.reason}</Text>
