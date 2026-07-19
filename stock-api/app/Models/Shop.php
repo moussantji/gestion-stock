@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 
 /** 🏬 Boutique physique (multi-boutiques v12 — stock global partagé). */
 class Shop extends Model
 {
+    use BelongsToCompany;
+
     protected $fillable = ['name', 'phone', 'address', 'is_active'];
 
     protected function casts(): array

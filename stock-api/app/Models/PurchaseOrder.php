@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 class PurchaseOrder extends Model
 {
+    use BelongsToCompany;
+
     public const STATUS_DRAFT = 'draft';
 
     public const STATUS_SENT = 'sent';

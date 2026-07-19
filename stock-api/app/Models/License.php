@@ -15,7 +15,7 @@ class License extends Model
     public const STATUS_REVOKED = 'revoked';
 
     protected $fillable = [
-        'key', 'order_id', 'buyer_name', 'buyer_email',
+        'company_id', 'key', 'order_id', 'buyer_name', 'buyer_email',
         'plan_name', 'price', 'starts_at', 'expires_at', 'status',
     ];
 
@@ -35,6 +35,11 @@ class License extends Model
     public function order()
     {
         return $this->belongsTo(Order::class);
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
     }
 
     /** active | expired | revoked (état réel calculé) */

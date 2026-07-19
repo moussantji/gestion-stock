@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 
 /** 🎁 Mouvement de points de fidélité (gain / utilisation). */
 class LoyaltyTransaction extends Model
 {
+    use BelongsToCompany;
+
     public const TYPE_EARN = 'earn';
 
     public const TYPE_REDEEM = 'redeem';

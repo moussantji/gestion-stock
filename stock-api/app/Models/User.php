@@ -32,7 +32,7 @@ class User extends Authenticatable
         self::ROLE_CLIENT => 'Client',
     ];
 
-    protected $fillable = ['name', 'email', 'password', 'role', 'shop_id'];
+    protected $fillable = ['name', 'email', 'password', 'role', 'shop_id', 'company_id'];
 
     protected $hidden = ['password', 'remember_token'];
 
@@ -80,5 +80,11 @@ class User extends Authenticatable
     public function shop()
     {
         return $this->belongsTo(Shop::class);
+    }
+
+    /** 🏢 Entreprise (locataire) de rattachement. null = super-admin plateforme. */
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
     }
 }

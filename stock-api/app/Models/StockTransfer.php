@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
@@ -16,6 +17,8 @@ use Illuminate\Support\Str;
  */
 class StockTransfer extends Model
 {
+    use BelongsToCompany;
+
     public const STATUS_IN_TRANSIT = 'in_transit';
 
     public const STATUS_RECEIVED = 'received';

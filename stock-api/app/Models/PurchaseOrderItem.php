@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 
 class PurchaseOrderItem extends Model
 {
+    use BelongsToCompany;
+
     protected $fillable = [
         'purchase_order_id', 'product_id', 'product_name', 'quantity', 'unit_price', 'subtotal',
         'received_qty', // 🧾 déjà réceptionné (réception partielle)

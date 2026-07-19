@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 
 /** 🔄 Une ligne d'inventaire : stock système (expected) vs comptage réel (counted). */
 class InventoryItem extends Model
 {
+    use BelongsToCompany;
+
     protected $fillable = ['inventory_id', 'product_id', 'expected_quantity', 'counted_quantity'];
 
     protected $appends = ['difference'];

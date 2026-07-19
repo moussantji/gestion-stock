@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToCompany;
 use App\Support\ShopStock;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -14,6 +15,8 @@ use Illuminate\Validation\ValidationException;
  */
 class RecurringSale extends Model
 {
+    use BelongsToCompany;
+
     public const FREQ_WEEKLY = 'weekly';
 
     public const FREQ_MONTHLY = 'monthly';

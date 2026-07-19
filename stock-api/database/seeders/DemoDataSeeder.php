@@ -8,11 +8,19 @@ use App\Models\StockMovement;
 use App\Models\Supplier;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Auth;
 
 class DemoDataSeeder extends Seeder
 {
     public function run(): void
     {
+        // 🏢 On seed DANS le contexte de l'entreprise démo → le trait BelongsToCompany
+        //    auto-remplit company_id sur toutes les créations (produits, mouvements…).
+        $admin = User::where('email', 'admin@stock.com')->whereNotNull('company_id')->first();
+        if ($admin) {
+            Auth::login($admin);
+        }
+
         // ---------- Catégories ----------
         $categories = collect([
             ['name' => 'Boissons', 'description' => 'Eaux, jus et boissons diverses'],
@@ -111,6 +119,8 @@ class DemoDataSeeder extends Seeder
                 $product->update(['quantity' => $desired]);
             }
         }
+
+        Auth::logout(); // on quitte le contexte entreprise (seeders plateforme ensuite)
     }
 
     /** Crée un mouvement daté d'il y a X jours. */

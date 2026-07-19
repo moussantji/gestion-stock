@@ -31,11 +31,11 @@ class AuthController extends Controller
             ]);
         }
 
-        // 👤 v2.14 — compte CLIENT : abonnement joint + blocage si expiré (après grâce)
-        $subscription = $user->isClient() ? LicenseService::clientSubscription($user->email) : null;
+        // 🏢 v26 — l'abonnement de l'ENTREPRISE gate TOUT son personnel (admin + staff).
+        $subscription = LicenseService::subscriptionForCompany($user->company);
         if ($subscription && $subscription['state']['code'] === 'expired') {
             return response()->json([
-                'message' => 'Votre abonnement a expiré. Renouvelez sur votre espace client : '.rtrim(config('app.url'), '/').'/compte',
+                'message' => 'Votre abonnement a expiré. Renouvelez sur votre espace : '.rtrim(config('app.url'), '/').'/compte',
                 'code' => 'subscription_expired',
                 'subscription' => $subscription,
             ], 403);
@@ -49,7 +49,7 @@ class AuthController extends Controller
         return response()->json([
             'token' => $token,
             'user' => $user,
-            'subscription' => $subscription, // null pour les comptes staff
+            'subscription' => $subscription, // null pour le super-admin plateforme
         ]);
     }
 
@@ -72,12 +72,12 @@ class AuthController extends Controller
         }
 
         $user = User::where('email', $payload['email'])->first();
-        if (! $user || ! $user->isClient()) {
-            return response()->json(['message' => 'Compte client introuvable.'], 404);
+        if (! $user) {
+            return response()->json(['message' => 'Compte introuvable.'], 404);
         }
 
-        // Re-vérification de l'abonnement au moment de l'échange (sécurité)
-        $subscription = LicenseService::clientSubscription($user->email);
+        // Re-vérification de l'abonnement de l'entreprise au moment de l'échange (sécurité)
+        $subscription = LicenseService::subscriptionForCompany($user->company);
         if ($subscription && $subscription['state']['code'] === 'expired') {
             return response()->json([
                 'message' => 'Votre abonnement a expiré. Renouvelez sur votre espace client : '.rtrim(config('app.url'), '/').'/compte',
@@ -100,8 +100,8 @@ class AuthController extends Controller
 
         return response()->json([
             'user' => $user,
-            // 👤 v2.14 : état d'abonnement temps réel pour les comptes clients
-            'subscription' => $user->isClient() ? LicenseService::clientSubscription($user->email) : null,
+            // 🏢 v26 : état d'abonnement temps réel de l'entreprise de l'utilisateur
+            'subscription' => LicenseService::subscriptionForCompany($user->company),
         ]);
     }
 

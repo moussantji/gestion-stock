@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 
 /** 🔁 Ligne d'un abonnement (produit + quantité à chaque échéance). */
 class RecurringSaleItem extends Model
 {
+    use BelongsToCompany;
+
     protected $fillable = ['recurring_sale_id', 'product_id', 'quantity', 'unit_price'];
 
     protected function casts(): array

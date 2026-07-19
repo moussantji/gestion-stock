@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 
 /** 👥 Fiche client de la boutique (CRM léger). */
 class Customer extends Model
 {
+    use BelongsToCompany;
+
     protected $fillable = ['name', 'phone', 'email', 'address', 'notes', 'shop_id', 'price_tier', 'loyalty_points'];
 
     public const TIER_RETAIL = 'retail';      // 👥 client détail (prix normal)
