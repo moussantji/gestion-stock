@@ -21,12 +21,13 @@ class PushService
      * Envoie une notification à tous les utilisateurs ADMIN
      * ayant un téléphone enregistré.
      */
-    public static function sendToAdmins(string $title, string $body, array $data = []): int
+    public static function sendToAdmins(string $title, string $body, array $data = [], ?int $companyId = null): int
     {
-        $tokens = PushToken::whereIn(
-            'user_id',
-            User::where('role', User::ROLE_ADMIN)->pluck('id')
-        )->pluck('token')->all();
+        $adminIds = User::where('role', User::ROLE_ADMIN)
+            ->when($companyId, fn ($q) => $q->where('company_id', $companyId)) // 🏢 ciblage par entreprise
+            ->pluck('id');
+
+        $tokens = PushToken::whereIn('user_id', $adminIds)->pluck('token')->all();
 
         return self::send($tokens, $title, $body, $data);
     }

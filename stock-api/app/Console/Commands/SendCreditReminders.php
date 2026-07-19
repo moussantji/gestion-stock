@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Company;
 use App\Models\PushToken;
 use App\Models\Receipt;
 use App\Models\User;
@@ -9,7 +10,7 @@ use App\Services\PushService;
 use App\Support\Setting;
 use Illuminate\Console\Command;
 
-/** 📅 Rappel push : crédits clients non soldés depuis plus de N jours (seuil configurable). */
+/** 📅 Rappel push : crédits clients non soldés depuis plus de N jours (par entreprise). */
 class SendCreditReminders extends Command
 {
     protected $signature = 'credits:remind {--days= : Ancienneté minimale du crédit en jours (défaut : réglage boutique)}';
@@ -18,41 +19,43 @@ class SendCreditReminders extends Command
 
     public function handle(): int
     {
-        // 🎯 Seuil : option CLI prioritaire, sinon réglage boutique (défaut 7)
-        $days = (int) ($this->option('days') ?: Setting::get('credit_reminder_days', 7));
-        $limit = now()->subDays($days);
+        $optDays = $this->option('days');
 
-        $oldCredits = Receipt::with(['customer:id,name'])
-            ->where('status', Receipt::STATUS_COMPLETED)
-            ->whereColumn('amount_paid', '<', 'total')
-            ->where('created_at', '<=', $limit)
-            ->oldest()
-            ->get();
+        Company::runForEach(function (Company $company) use ($optDays) {
+            // 🎯 Seuil : option CLI prioritaire, sinon réglage de CETTE entreprise (défaut 7)
+            $days = (int) ($optDays ?: Setting::get('credit_reminder_days', 7));
+            $limit = now()->subDays($days);
 
-        if ($oldCredits->isEmpty()) {
-            $this->info('Aucun crédit ancien — pas de rappel.');
+            $oldCredits = Receipt::with(['customer:id,name'])
+                ->where('status', Receipt::STATUS_COMPLETED)
+                ->whereColumn('amount_paid', '<', 'total')
+                ->where('created_at', '<=', $limit)
+                ->oldest()
+                ->get();
 
-            return self::SUCCESS;
-        }
+            if ($oldCredits->isEmpty()) {
+                return;
+            }
 
-        $due = (int) $oldCredits->sum(fn (Receipt $r) => $r->remaining);
-        $count = $oldCredits->count();
-        $names = $oldCredits->take(3)
-            ->map(fn (Receipt $r) => $r->customer?->name ?? $r->client_name ?? $r->number)
-            ->implode(', ');
+            $due = (int) $oldCredits->sum(fn (Receipt $r) => $r->remaining);
+            $count = $oldCredits->count();
+            $names = $oldCredits->take(3)
+                ->map(fn (Receipt $r) => $r->customer?->name ?? $r->client_name ?? $r->number)
+                ->implode(', ');
 
-        $title = "💳 {$count} crédit(s) de +{$days} jours";
-        $body = 'Encours ancien : '.number_format($due, 0, ',', ' ')." FCFA — à relancer : {$names}"
-            .($count > 3 ? '…' : '');
+            $title = "💳 {$count} crédit(s) de +{$days} jours";
+            $body = 'Encours ancien : '.number_format($due, 0, ',', ' ')." FCFA — à relancer : {$names}"
+                .($count > 3 ? '…' : '');
 
-        $tokens = PushToken::whereIn(
-            'user_id',
-            User::whereIn('role', ['admin', 'manager'])->pluck('id')
-        )->pluck('token')->all();
+            $tokens = PushToken::whereIn(
+                'user_id',
+                User::where('company_id', $company->id)->whereIn('role', ['admin', 'manager'])->pluck('id')
+            )->pluck('token')->all();
 
-        $sent = PushService::send($tokens, $title, $body, ['type' => 'credit_reminder']);
+            $sent = PushService::send($tokens, $title, $body, ['type' => 'credit_reminder']);
 
-        $this->info("Rappel crédit envoyé à {$sent} appareil(s) — {$count} crédit(s) anciens.");
+            $this->info("[{$company->name}] rappel crédit → {$sent} appareil(s), {$count} crédit(s) anciens.");
+        });
 
         return self::SUCCESS;
     }
