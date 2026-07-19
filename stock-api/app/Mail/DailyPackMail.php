@@ -42,7 +42,7 @@ class DailyPackMail extends Mailable implements ShouldQueue
         return new Content(view: 'emails.daily_pack');
     }
 
-    /** @return array<int, \Illuminate\Mail\Mailables\Attachment> */
+    /** @return array<int, Attachment> */
     public function attachments(): array
     {
         $files = [

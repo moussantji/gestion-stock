@@ -82,7 +82,7 @@ class HomeController extends Controller
         try {
             PushService::sendToAdmins(
                 '🛒 Nouvelle commande',
-                "{$order->reference} · {$order->buyer_name} · " . number_format($order->amount, 0, ',', ' ') . ' FCFA — à valider',
+                "{$order->reference} · {$order->buyer_name} · ".number_format($order->amount, 0, ',', ' ').' FCFA — à valider',
                 ['type' => 'new_order', 'order_id' => $order->id, 'reference' => $order->reference]
             );
         } catch (\Throwable $e) {

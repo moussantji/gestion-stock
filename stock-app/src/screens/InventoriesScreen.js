@@ -208,7 +208,7 @@ export default function InventoriesScreen({ navigation }) {
             />
           }
           ListEmptyComponent={
-            <EmptyState icon="📋" title={t('inv_empty')} subtitle={t('inv_empty_sub')} />
+            <EmptyState ionicon="clipboard-outline" title={t('inv_empty')} subtitle={t('inv_empty_sub')} />
           }
           ListHeaderComponent={
             canManage && items.length > 0 ? (

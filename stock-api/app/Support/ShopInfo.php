@@ -24,6 +24,7 @@ class ShopInfo
                 return $path;
             }
         }
+
         return null;
     }
 
@@ -34,7 +35,8 @@ class ShopInfo
         if (! $path) {
             return null;
         }
-        return asset('images/' . basename($path)) . '?v=' . filemtime($path);
+
+        return asset('images/'.basename($path)).'?v='.filemtime($path);
     }
 
     /**
@@ -59,7 +61,7 @@ class ShopInfo
             return null;
         }
 
-        return "data:{$mime};base64," . base64_encode($contents);
+        return "data:{$mime};base64,".base64_encode($contents);
     }
 
     /**
@@ -77,7 +79,7 @@ class ShopInfo
 
         $file->move(public_path('images'), "shop-logo.{$ext}");
 
-        return asset("images/shop-logo.{$ext}") . '?v=' . time();
+        return asset("images/shop-logo.{$ext}").'?v='.time();
     }
 
     public static function deleteLogo(): void

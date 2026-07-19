@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('name');                  // Orange Money
             $table->string('icon')->default('💳');   // emoji affiché sur le site
             $table->string('account')->nullable();   // numéro / compte du marchand
-            $table->text('instructions')->nullable();// étapes, une par ligne
+            $table->text('instructions')->nullable(); // étapes, une par ligne
             $table->boolean('is_active')->default(true);
             $table->unsignedTinyInteger('sort_order')->default(0);
             $table->timestamps();

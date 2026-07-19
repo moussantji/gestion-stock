@@ -16,9 +16,19 @@ class EnsureRole
         $user = $request->user();
 
         if (! $user || ! in_array($user->role, $roles, true)) {
-            return response()->json([
-                'message' => 'Accès refusé : rôle insuffisant.',
-            ], 403);
+            // API / clients attendant du JSON → réponse JSON 403.
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'message' => 'Accès refusé : rôle insuffisant.',
+                ], 403);
+            }
+
+            // Web : non connecté → page de connexion ; connecté mais rôle insuffisant → 403.
+            if (! $user) {
+                return redirect()->guest(route('login'));
+            }
+
+            abort(403, 'Accès refusé : rôle insuffisant.');
         }
 
         return $next($request);

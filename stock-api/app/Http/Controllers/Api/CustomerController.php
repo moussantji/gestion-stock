@@ -7,6 +7,9 @@ use App\Models\Customer;
 use App\Models\PushToken;
 use App\Models\User;
 use App\Services\PushService;
+use App\Support\Setting;
+use App\Support\ShopScope;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
@@ -31,7 +34,7 @@ class CustomerController extends Controller
     /** Réglage `credit_schedule` décodé : {customer_id: ['AAAA-MM-JJ', …]} (défensif : tableau sinon). */
     private function creditSchedule(): array
     {
-        $raw = \App\Support\Setting::getText('credit_schedule');
+        $raw = Setting::getText('credit_schedule');
         if ($raw === '') {
             return [];
         }
@@ -76,7 +79,7 @@ class CustomerController extends Controller
     {
         $schedule = $this->creditSchedule(); // 💳 v2.13 : décodé UNE fois pour tout le lot
 
-        $customers = \App\Support\ShopScope::apply($this->aggregates(Customer::query()), $request) // 🏬
+        $customers = ShopScope::apply($this->aggregates(Customer::query()), $request) // 🏬
             ->when($request->filled('q'), function ($q) use ($request) {
                 $term = $request->query('q');
                 $q->where(fn ($w) => $w->where('name', 'like', "%{$term}%")
@@ -89,23 +92,23 @@ class CustomerController extends Controller
                 $plan = $this->planFor($schedule, $c->id); // 💳 v2.13 (additif)
 
                 return [
-                'id' => $c->id,
-                'name' => $c->name,
-                'phone' => $c->phone,
-                'email' => $c->email,
-                'address' => $c->address,
-                'price_tier' => $c->price_tier ?? Customer::TIER_RETAIL, // 👥 détail/gros
-                'loyalty_points' => (int) ($c->loyalty_points ?? 0),     // 🎁 solde fidélité
-                'receipts_count' => (int) $c->receipts_count,
-                'spent_total' => (int) ($c->spent_total ?? 0),
-                'paid_total' => (int) ($c->paid_total ?? 0),
-                // 💳 Encours crédit = total acheté − remises fidélité − total payé (avoirs exclus)
-                'credit_balance' => max(0, (int) $c->spent_total - (int) ($c->discount_total ?? 0) - (int) $c->paid_total),
-                'last_purchase_at' => $c->last_purchase_at,
-                // 💳 v2.13 : échéancier planifié (additif — dates [] / next null si rien, vieux clients ignorent)
-                'payment_dates' => $plan['dates'],
-                'next_payment_date' => $plan['next'],
-                'days_until' => $plan['days_until'],
+                    'id' => $c->id,
+                    'name' => $c->name,
+                    'phone' => $c->phone,
+                    'email' => $c->email,
+                    'address' => $c->address,
+                    'price_tier' => $c->price_tier ?? Customer::TIER_RETAIL, // 👥 détail/gros
+                    'loyalty_points' => (int) ($c->loyalty_points ?? 0),     // 🎁 solde fidélité
+                    'receipts_count' => (int) $c->receipts_count,
+                    'spent_total' => (int) ($c->spent_total ?? 0),
+                    'paid_total' => (int) ($c->paid_total ?? 0),
+                    // 💳 Encours crédit = total acheté − remises fidélité − total payé (avoirs exclus)
+                    'credit_balance' => max(0, (int) $c->spent_total - (int) ($c->discount_total ?? 0) - (int) $c->paid_total),
+                    'last_purchase_at' => $c->last_purchase_at,
+                    // 💳 v2.13 : échéancier planifié (additif — dates [] / next null si rien, vieux clients ignorent)
+                    'payment_dates' => $plan['dates'],
+                    'next_payment_date' => $plan['next'],
+                    'days_until' => $plan['days_until'],
                 ];
             })
             ->values();
@@ -125,7 +128,7 @@ class CustomerController extends Controller
             'email' => ['nullable', 'email', 'max:255'],
             'address' => ['nullable', 'string', 'max:255'],
             'notes' => ['nullable', 'string', 'max:500'],
-            'price_tier' => ['nullable', 'in:' . Customer::TIER_RETAIL . ',' . Customer::TIER_WHOLESALE], // 👥
+            'price_tier' => ['nullable', 'in:'.Customer::TIER_RETAIL.','.Customer::TIER_WHOLESALE], // 👥
         ]);
 
         if (! empty($data['phone']) && Customer::where('phone', $data['phone'])->exists()) {
@@ -134,7 +137,7 @@ class CustomerController extends Controller
             ]);
         }
 
-        $customer = Customer::create([...$data, 'shop_id' => \App\Support\ShopScope::currentShopId($request)]);
+        $customer = Customer::create([...$data, 'shop_id' => ShopScope::currentShopId($request)]);
 
         return response()->json(['data' => $customer], 201);
     }
@@ -173,8 +176,8 @@ class CustomerController extends Controller
             'history' => $history,
             'loyalty_history' => $loyalty, // 🎁
             'loyalty_config' => [           // 🎁 pour l'affichage app
-                'earn_per' => (int) \App\Support\Setting::get('loyalty_earn_per', 1000),
-                'point_value' => (int) \App\Support\Setting::get('loyalty_point_value', 10),
+                'earn_per' => (int) Setting::get('loyalty_earn_per', 1000),
+                'point_value' => (int) Setting::get('loyalty_point_value', 10),
             ],
             // 💳 v2.13 : échéancier planifié (additif — absent = vieux serveur, carte masquée côté clients)
             'payment_plan' => $this->planFor($this->creditSchedule(), $customer->id),
@@ -190,7 +193,7 @@ class CustomerController extends Controller
             'email' => ['nullable', 'email', 'max:255'],
             'address' => ['nullable', 'string', 'max:255'],
             'notes' => ['nullable', 'string', 'max:500'],
-            'price_tier' => ['nullable', 'in:' . Customer::TIER_RETAIL . ',' . Customer::TIER_WHOLESALE], // 👥
+            'price_tier' => ['nullable', 'in:'.Customer::TIER_RETAIL.','.Customer::TIER_WHOLESALE], // 👥
             // 💳 v2.13 : échéancier planifié — liste complète remplacée ([] = aucune date)
             'payment_plan' => ['nullable', 'array', 'max:12'],
             'payment_plan.*' => ['date_format:Y-m-d'],
@@ -223,7 +226,7 @@ class CustomerController extends Controller
             } else {
                 $schedule[$customer->id] = $dates;
             }
-            \App\Support\Setting::set('credit_schedule', $schedule === [] ? '' : json_encode($schedule, JSON_UNESCAPED_UNICODE));
+            Setting::set('credit_schedule', $schedule === [] ? '' : json_encode($schedule, JSON_UNESCAPED_UNICODE));
         }
 
         return response()->json([
@@ -255,8 +258,8 @@ class CustomerController extends Controller
             return response()->json(['notified' => 0, 'clients' => 0]);
         }
 
-        $loyalMin = (int) \App\Support\Setting::get('segment_loyal_min', 5);
-        $inactiveDays = (int) \App\Support\Setting::get('segment_inactive_days', 60);
+        $loyalMin = (int) Setting::get('segment_loyal_min', 5);
+        $inactiveDays = (int) Setting::get('segment_inactive_days', 60);
         $labels = [
             'loyal' => ['⭐ Fidèles', "clients fidèles ({$loyalMin}+ achats) — pensez à les remercier !"],
             'credit' => ['💳 Crédits', 'clients avec un crédit en cours — campagne de relance ?'],
@@ -274,7 +277,7 @@ class CustomerController extends Controller
         $notified = PushService::send(
             $tokens,
             "{$title} : {$count} client(s)",
-            "{$text} — ex : {$names}" . ($count > 3 ? '…' : ''),
+            "{$text} — ex : {$names}".($count > 3 ? '…' : ''),
             ['type' => 'customer_segment', 'segment' => $data['segment']]
         );
 
@@ -285,14 +288,14 @@ class CustomerController extends Controller
     private function applySegment($customers, ?string $segment)
     {
         // 🎯 Seuils configurables (Réglages boutique)
-        $loyalMin = (int) \App\Support\Setting::get('segment_loyal_min', 5);
-        $inactiveDays = (int) \App\Support\Setting::get('segment_inactive_days', 60);
+        $loyalMin = (int) Setting::get('segment_loyal_min', 5);
+        $inactiveDays = (int) Setting::get('segment_inactive_days', 60);
 
         return match ($segment) {
             'loyal' => $customers->filter(fn ($c) => $c['receipts_count'] >= $loyalMin),
             'credit' => $customers->filter(fn ($c) => $c['credit_balance'] > 0),
             'inactive' => $customers->filter(fn ($c) => empty($c['last_purchase_at'])
-                || \Carbon\Carbon::parse($c['last_purchase_at'])->lt(now()->subDays($inactiveDays))),
+                || Carbon::parse($c['last_purchase_at'])->lt(now()->subDays($inactiveDays))),
             default => $customers,
         };
     }

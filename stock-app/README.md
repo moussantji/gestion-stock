@@ -4,29 +4,22 @@ App de gestion de stock connectée à l'API Laravel — thème sombre premium, m
 
 ## Installation
 
-```bash
-npx create-expo-app@latest stock-app --template blank
-cd stock-app
+> ✅ Ce dossier est **déjà un projet Expo complet** (`package.json`, `app.json`, `index.js` fournis, SDK 57). Pas besoin de `create-expo-app` ni de réinstaller les paquets un par un.
 
-npx expo install \
-  @react-navigation/native @react-navigation/native-stack @react-navigation/bottom-tabs \
-  react-native-screens react-native-safe-area-context \
-  axios expo-secure-store expo-camera expo-file-system expo-sharing \
-  react-native-svg react-native-chart-kit \
-  @react-native-async-storage/async-storage @react-native-community/netinfo \
-  expo-image-picker expo-notifications expo-file-system/legacy expo-constants
+```bash
+cd stock-app
+npm install            # installe TOUTES les dépendances déclarées dans package.json
+# (facultatif) aligner les versions natives sur ton SDK Expo :
+npx expo install --fix
+
+# configure l'IP de ton API dans src/config.js, puis :
+npx expo start         # → QR code → Expo Go
 
 # Pour les push DISTANTES (hors Expo Go) : projectId Expo dans app.json
 npx eas init
 ```
 
-> 💡 `expo-file-system/legacy` est requis par l'app (`import ... from 'expo-file-system/legacy'`) : compatible Expo Go / SDK 53+.
-
-Copier `App.js` + `src/` de ce dossier dans le projet, configurer `src/config.js`, puis :
-
-```bash
-npx expo start    # → QR code → Expo Go
-```
+> ⚠️ **Ne pas** faire `expo install expo-file-system/legacy` : `expo-file-system/legacy` n'est **pas** un paquet, c'est un **sous-chemin** du paquet `expo-file-system` (déjà installé). L'app l'importe via `import * as FileSystem from 'expo-file-system/legacy'` — aucune installation séparée.
 
 > ⚠️ Pour voir les **photos des produits**, `APP_URL` du `.env` Laravel doit être l'IP de ton PC (la même que dans `src/config.js`), et `php artisan storage:link` doit avoir été exécuté.
 

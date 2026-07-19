@@ -11,11 +11,12 @@ import {
   View,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as SecureStore from 'expo-secure-store';
 import * as Sharing from 'expo-sharing';
 import api, { getErrorMessage } from '../api/client';
-import { SERVER_URL } from '../config';
+import { SERVER_URL, mediaUrl } from '../config';
 import { useAuth } from '../context/AuthContext';
 import { useLocale } from '../context/LocaleContext';
 import { useNetwork } from '../context/NetworkContext';
@@ -146,7 +147,7 @@ export default function ProductDetailScreen({ route, navigation }) {
       ) : null}
 
       {/* Photo */}
-      {product.image_url ? <Image source={{ uri: product.image_url }} style={styles.photo} /> : null}
+      {product.image_url ? <Image source={{ uri: mediaUrl(product.image_url) }} style={styles.photo} /> : null}
 
       {/* En-tête */}
       <View style={styles.headerCard}>
@@ -176,14 +177,14 @@ export default function ProductDetailScreen({ route, navigation }) {
           style={[styles.actionBtn, { backgroundColor: colors.success, marginRight: 8 }]}
           onPress={() => navigation.navigate('MovementForm', { product, type: 'in' })}
         >
-          <Text style={styles.actionIcon}>⬇️</Text>
+          <Ionicons name="arrow-down" size={20} color="#0B0F1A" />
           <Text style={styles.actionText}>{t('pd_in')}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.actionBtn, { backgroundColor: colors.danger, marginLeft: 8 }]}
           onPress={() => navigation.navigate('MovementForm', { product, type: 'out' })}
         >
-          <Text style={styles.actionIcon}>⬆️</Text>
+          <Ionicons name="arrow-up" size={20} color="#0B0F1A" />
           <Text style={styles.actionText}>{t('pd_out')}</Text>
         </TouchableOpacity>
       </View>
@@ -239,7 +240,7 @@ export default function ProductDetailScreen({ route, navigation }) {
           ))
         ) : (
           <EmptyState
-            icon="🔄"
+            ionicon="sync-outline"
             title={isOnline ? t('pd_no_moves') : t('pd_offline_moves')}
           />
         )}

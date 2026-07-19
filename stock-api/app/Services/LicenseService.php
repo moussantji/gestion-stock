@@ -5,12 +5,12 @@ namespace App\Services;
 use App\Mail\ClientAccountDelivered;
 use App\Mail\SubscriptionActive;
 use App\Mail\SubscriptionExtended;
+use App\Models\Company;
 use App\Models\License;
 use App\Models\Order;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
 
 /**
  * 👤 v2.14 — Abonnement = COMPTE CLIENT (plus de clé à copier-coller).
@@ -41,8 +41,14 @@ class LicenseService
 
             $days = $order->plan?->duration_days ?? 30;
 
-            // 🔁 RENOUVELLEMENT : même email → prolongation de l'abonnement existant
-            $existing = License::where('buyer_email', $order->buyer_email)
+            // 🏢 ENTREPRISE (locataire) : une par email d'acheteur.
+            $company = Company::firstOrCreate(
+                ['owner_email' => $order->buyer_email],
+                ['name' => $order->buyer_name ?: 'Mon entreprise', 'phone' => $order->buyer_phone],
+            );
+
+            // 🔁 RENOUVELLEMENT : abonnement actif de CETTE entreprise → prolongation
+            $existing = License::where('company_id', $company->id)
                 ->where('status', License::STATUS_ACTIVE)
                 ->orderByDesc('expires_at')
                 ->first();
@@ -61,6 +67,7 @@ class LicenseService
                 $extended = true;
             } else {
                 $license = License::create([
+                    'company_id' => $company->id,
                     'key' => License::generateKey(), // interne — jamais affichée (v2.14)
                     'order_id' => $order->id,
                     'buyer_name' => $order->buyer_name,
@@ -72,27 +79,33 @@ class LicenseService
                 ]);
             }
 
-            // 👤 COMPTE CLIENT (role 'client', hors rôles staff)
+            // 👤 COMPTE ADMIN de l'entreprise (v26 : l'acheteur gère SON propre stock).
             $account = null;
             $password = null;
             $note = null;
             $existingUser = User::where('email', $order->buyer_email)->first();
-            if ($existingUser && ! $existingUser->isClient()) {
-                // Email déjà pris par un compte STAFF : on ne touche à rien (conflit signalé)
+            if ($existingUser && $existingUser->company_id && (int) $existingUser->company_id !== (int) $company->id) {
+                // Email déjà rattaché à une AUTRE entreprise : on ne touche à rien (conflit signalé)
                 $note = 'email_conflict';
             } elseif ($existingUser) {
-                $account = $existingUser; // renouvellement : mot de passe inchangé
+                // Rattache l'utilisateur existant à son entreprise si besoin (renouvellement)
+                if (! $existingUser->company_id) {
+                    $existingUser->update(['company_id' => $company->id, 'role' => User::ROLE_ADMIN]);
+                }
+                $account = $existingUser; // mot de passe inchangé
             } else {
                 $password = self::generatePassword();
                 $account = User::create([
                     'name' => $order->buyer_name,
                     'email' => $order->buyer_email,
                     'password' => $password, // cast 'hashed' du modèle
-                    'role' => User::ROLE_CLIENT,
+                    'role' => User::ROLE_ADMIN,
+                    'company_id' => $company->id,
                 ]);
             }
 
             return [
+                'company' => $company,
                 'license' => $license,
                 'account' => $account,
                 'password' => $password,
@@ -148,17 +161,46 @@ class LicenseService
         ];
     }
 
+    /**
+     * 🏢 v26 — Abonnement courant d'une ENTREPRISE (gating login/API au niveau
+     * locataire : tout le personnel est bloqué si l'abonnement de l'entreprise expire).
+     *
+     * @return array{plan_name:string, expires_at:string, state:array}|null
+     */
+    public static function subscriptionForCompany(?Company $company): ?array
+    {
+        if (! $company) {
+            return null; // super-admin plateforme : pas d'abonnement à vérifier
+        }
+
+        $license = $company->licenses()
+            ->where('status', License::STATUS_ACTIVE)
+            ->orderByDesc('expires_at')
+            ->first();
+
+        if (! $license) {
+            return null;
+        }
+
+        return [
+            'plan_name' => $license->plan_name,
+            'expires_at' => $license->expires_at->toDateTimeString(),
+            'state' => $license->subscriptionState(),
+        ];
+    }
+
     /** Mot de passe lisible (alphabet sans ambiguïté : pas de 0/O/1/l) — format xxxxx-xxxxx. */
     public static function generatePassword(): string
     {
         $alphabet = 'abcdefghjkmnpqrstuvwxyz23456789';
         $one = fn (int $n) => collect(range(1, $n))->map(fn () => $alphabet[random_int(0, strlen($alphabet) - 1)])->implode('');
 
-        return $one(5) . '-' . $one(5);
+        return $one(5).'-'.$one(5);
     }
 
     /**
      * 🔑↻ Régénère le mot de passe d'un compte client (perdu, partagé trop tôt…).
+     *
      * @return string|null le nouveau mot de passe en clair (1×) — null si pas de compte client
      */
     public static function resetClientPassword(License $license): ?string

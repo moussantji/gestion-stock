@@ -3,9 +3,11 @@
 return [
     // ---------- Navigation ----------
     'nav_features' => 'Fonctionnalités',
+    'nav_features_short' => 'Fonctions',
     'nav_pricing' => 'Tarifs',
     'nav_faq' => 'FAQ',
     'nav_check' => 'Mon compte',
+    'nav_check_short' => 'Compte',
     'nav_buy' => 'Acheter un abonnement',
     'nav_home' => 'Accueil',
 
@@ -13,7 +15,7 @@ return [
     'hero_badge' => 'Disponible sur Android & iOS · Mode hors ligne inclus',
     'hero_title_a' => 'Gérez votre stock',
     'hero_title_b' => 'comme un pro.',
-    'hero_subtitle' => "StockFlow transforme la gestion de votre boutique : produits, entrées/sorties, alertes de stock bas, scan de code-barres et tableau de bord temps réel — même sans Internet.",
+    'hero_subtitle' => 'StockFlow transforme la gestion de votre boutique : produits, entrées/sorties, alertes de stock bas, scan de code-barres et tableau de bord temps réel — même sans Internet.',
     'hero_cta_primary' => '🚀 Voir les formules',
     'hero_cta_secondary' => "Découvrir l'app",
     'stat_licenses' => 'Abonnements actifs',
@@ -113,7 +115,6 @@ return [
     'email_note' => 'Vos identifiants de connexion seront envoyés à :email. Suivez tout sur',
     'verify_page' => 'votre espace client',
     'back_home' => "← Retour à l'accueil",
-
 
     // ---------- 👤 Portail client (v2.14) ----------
     'client_login_title' => '👤 Espace client',

@@ -14,12 +14,13 @@ import {
   View,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import { BarChart } from 'react-native-chart-kit';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as SecureStore from 'expo-secure-store';
 import * as Sharing from 'expo-sharing';
 import api, { getErrorMessage } from '../api/client';
-import { SERVER_URL } from '../config';
+import { SERVER_URL, mediaUrl } from '../config';
 import { useAuth } from '../context/AuthContext';
 import { useLocale } from '../context/LocaleContext';
 import { colors } from '../theme/colors';
@@ -184,7 +185,7 @@ export default function StatsScreen() {
   if (!allowed) {
     return (
       <View style={[styles.container, styles.center]}>
-        <EmptyState icon="🔒" title={t('st_forbidden')} />
+        <EmptyState ionicon="lock-closed-outline" title={t('st_forbidden')} />
       </View>
     );
   }
@@ -411,12 +412,12 @@ export default function StatsScreen() {
         <>
           {/* ---------- Totaux ---------- */}
           <View style={styles.grid}>
-            <StatCard icon="💰" label={t('st_revenue')} value={formatMoney(totals.revenue)} color={colors.success} style={{ marginRight: 8 }} />
-            <StatCard icon="🧾" label={t('st_receipts')} value={totals.receipts} color={colors.primary} style={{ marginLeft: 8 }} />
+            <StatCard ionicon="cash" label={t('st_revenue')} value={formatMoney(totals.revenue)} color={colors.success} style={{ marginRight: 8 }} />
+            <StatCard ionicon="receipt" label={t('st_receipts')} value={totals.receipts} color={colors.primary} style={{ marginLeft: 8 }} />
           </View>
           <View style={[styles.grid, { marginTop: 12 }]}>
-            <StatCard icon="📦" label={t('st_items')} value={totals.items} color={colors.accent} style={{ marginRight: 8 }} />
-            <StatCard icon="🛒" label={t('st_avg')} value={formatMoney(totals.avg_basket)} color={colors.warning} style={{ marginLeft: 8 }} />
+            <StatCard ionicon="cube" label={t('st_items')} value={totals.items} color={colors.accent} style={{ marginRight: 8 }} />
+            <StatCard ionicon="cart" label={t('st_avg')} value={formatMoney(totals.avg_basket)} color={colors.warning} style={{ marginLeft: 8 }} />
           </View>
 
           {/* ---------- VUE PRODUITS ---------- */}
@@ -466,7 +467,7 @@ export default function StatsScreen() {
                       </Text>
                     </View>
                     {p.image_url ? (
-                      <Image source={{ uri: p.image_url }} style={styles.thumb} />
+                      <Image source={{ uri: mediaUrl(p.image_url) }} style={styles.thumb} />
                     ) : (
                       <View style={[styles.thumb, styles.thumbPlaceholder]}>
                         <Text style={{ fontSize: 16 }}>📦</Text>
@@ -711,12 +712,12 @@ export default function StatsScreen() {
         ) : margins && marginProducts.length > 0 ? (
           <>
             <View style={styles.grid}>
-              <StatCard icon="💰" label={t('mg_revenue')} value={formatMoney(margins.totals.revenue)} color={colors.success} style={{ marginRight: 8 }} />
-              <StatCard icon="💸" label={t('mg_cost')} value={formatMoney(margins.totals.cost)} color={colors.danger} style={{ marginLeft: 8 }} />
+              <StatCard ionicon="cash" label={t('mg_revenue')} value={formatMoney(margins.totals.revenue)} color={colors.success} style={{ marginRight: 8 }} />
+              <StatCard ionicon="trending-down" label={t('mg_cost')} value={formatMoney(margins.totals.cost)} color={colors.danger} style={{ marginLeft: 8 }} />
             </View>
             <View style={[styles.grid, { marginTop: 12 }]}>
-              <StatCard icon="🏆" label={t('mg_margin')} value={formatMoney(margins.totals.margin)} color={colors.primary} style={{ marginRight: 8 }} />
-              <StatCard icon="📈" label={t('mg_rate')} value={`${margins.totals.rate} %`} color={colors.accent} style={{ marginLeft: 8 }} />
+              <StatCard ionicon="trophy" label={t('mg_margin')} value={formatMoney(margins.totals.margin)} color={colors.primary} style={{ marginRight: 8 }} />
+              <StatCard ionicon="trending-up" label={t('mg_rate')} value={`${margins.totals.rate} %`} color={colors.accent} style={{ marginLeft: 8 }} />
             </View>
 
             <View style={styles.section}>
@@ -757,7 +758,7 @@ export default function StatsScreen() {
             <Text style={styles.marginHint}>{t('mg_hint')}</Text>
           </>
         ) : (
-          <EmptyState icon="💰" title={t('mg_none')} subtitle={t('st_no_sales_sub')} />
+          <EmptyState ionicon="cash-outline" title={t('mg_none')} subtitle={t('st_no_sales_sub')} />
         )}
 
         {/* 📊 v21 (v2.10) : rentabilité mois par mois sur 12 mois glissants (clé additive by_month) */}
@@ -865,17 +866,17 @@ export default function StatsScreen() {
               {/* Résumé de la période */}
               <View style={styles.pmTiles}>
                 <View style={[styles.pmTile, { borderColor: colors.success }]}>
-                  <Text style={styles.pmTileIcon}>⬇️</Text>
+                  <Ionicons name="arrow-down" size={16} color={colors.success} />
                   <Text style={[styles.pmTileValue, { color: colors.success }]}>{detail.totals.in}</Text>
                   <Text style={styles.pmTileLabel}>{t('pm_entries')}</Text>
                 </View>
                 <View style={[styles.pmTile, { borderColor: colors.danger }]}>
-                  <Text style={styles.pmTileIcon}>⬆️</Text>
+                  <Ionicons name="arrow-up" size={16} color={colors.danger} />
                   <Text style={[styles.pmTileValue, { color: colors.danger }]}>{detail.totals.out}</Text>
                   <Text style={styles.pmTileLabel}>{t('pm_exits')}</Text>
                 </View>
                 <View style={[styles.pmTile, { borderColor: colors.primary }]}>
-                  <Text style={styles.pmTileIcon}>🧾</Text>
+                  <Ionicons name="receipt" size={16} color={colors.primary} />
                   <Text style={[styles.pmTileValue, { color: colors.primary }]}>{detail.totals.sold_qty}</Text>
                   <Text style={styles.pmTileLabel}>{t('pm_sold')}</Text>
                 </View>
@@ -889,7 +890,7 @@ export default function StatsScreen() {
                 {detail.movements.length ? (
                   detail.movements.map((m) => (
                     <View key={m.id} style={styles.pmMoveRow}>
-                      <Text style={{ fontSize: 15 }}>{m.type === 'in' ? '⬇️' : '⬆️'}</Text>
+                      <Ionicons name={m.type === 'in' ? 'arrow-down' : 'arrow-up'} size={16} color={m.type === 'in' ? colors.success : colors.danger} />
                       <View style={{ flex: 1, marginLeft: 9 }}>
                         <Text style={styles.pmMoveReason} numberOfLines={1}>
                           {m.reason ?? (m.type === 'in' ? t('pm_entries') : t('pm_exits'))}
@@ -905,7 +906,7 @@ export default function StatsScreen() {
                     </View>
                   ))
                 ) : (
-                  <EmptyState icon="🔄" title={t('pm_empty')} />
+                  <EmptyState ionicon="sync-outline" title={t('pm_empty')} />
                 )}
               </ScrollView>
 

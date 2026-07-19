@@ -3,9 +3,12 @@
 namespace App\Console\Commands;
 
 use App\Mail\CreditReminderMail;
+use App\Models\Company;
+use App\Models\Customer;
 use App\Models\Receipt;
 use App\Support\Setting;
 use Illuminate\Console\Command;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Mail;
 
 /**
@@ -22,56 +25,57 @@ class CreditsRemindEmail extends Command
 
     public function handle(): int
     {
-        $to = Setting::getText('boss_email');
-        if ($to === '') {
-            $this->info('boss_email vide — rappel email ignoré (rien à faire).');
-            return self::SUCCESS;
-        }
+        // 📧 Un digest par ENTREPRISE (chacune a son boss_email + ses propres crédits).
+        Company::runForEach(function (Company $company) {
+            $to = Setting::getText('boss_email');
+            if ($to === '') {
+                return; // pas d'adresse pour cette entreprise
+            }
 
-        // 🎯 Même seuil que le push : réglage boutique credit_reminder_days (défaut 7)
-        $days = (int) Setting::get('credit_reminder_days', 7);
-        $limit = now()->subDays($days);
+            // 🎯 Même seuil que le push : réglage credit_reminder_days (défaut 7)
+            $days = (int) Setting::get('credit_reminder_days', 7);
+            $limit = now()->subDays($days);
 
-        $oldCredits = Receipt::with(['customer:id,name', 'shop:id,name'])
-            ->where('status', Receipt::STATUS_COMPLETED) // ↩️ avoirs exclus
-            ->whereColumn('amount_paid', '<', 'total')
-            ->where('created_at', '<=', $limit)
-            ->oldest() // les plus urgents d'abord
-            ->get();
+            $oldCredits = Receipt::with(['customer:id,name', 'shop:id,name'])
+                ->where('status', Receipt::STATUS_COMPLETED) // ↩️ avoirs exclus
+                ->whereColumn('amount_paid', '<', 'total')
+                ->where('created_at', '<=', $limit)
+                ->oldest() // les plus urgents d'abord
+                ->get();
 
-        // 💳📅 v2.13 : rappels PLANIFIÉS — échéance demain (J−1) ou déjà dépassée, solde > 0
-        $planned = $this->plannedRows();
+            // 💳📅 v2.13 : rappels PLANIFIÉS — échéance demain (J−1) ou déjà dépassée, solde > 0
+            $planned = $this->plannedRows();
 
-        if ($oldCredits->isEmpty() && $planned === []) {
-            $this->info('Aucun crédit ancien ni échéance planifiée — pas d’email.');
-            return self::SUCCESS;
-        }
+            if ($oldCredits->isEmpty() && $planned === []) {
+                return;
+            }
 
-        $due = (int) $oldCredits->sum(fn (Receipt $r) => (int) $r->remaining);
-        $count = $oldCredits->count();
+            $due = (int) $oldCredits->sum(fn (Receipt $r) => (int) $r->remaining);
+            $count = $oldCredits->count();
 
-        $rows = $oldCredits->take(15)->map(fn (Receipt $r) => [
-            'customer' => $r->customer?->name ?? $r->client_name ?? '—',
-            'number' => $r->number,
-            'date' => $r->created_at?->format('d/m/Y'),
-            'age' => (int) ($r->created_at ? $r->created_at->diffInDays(now()) : 0),
-            'remaining' => (int) $r->remaining,
-            'shop' => $r->shop?->name,
-        ])->values()->all();
+            $rows = $oldCredits->take(15)->map(fn (Receipt $r) => [
+                'customer' => $r->customer?->name ?? $r->client_name ?? '—',
+                'number' => $r->number,
+                'date' => $r->created_at?->format('d/m/Y'),
+                'age' => (int) ($r->created_at ? $r->created_at->diffInDays(now()) : 0),
+                'remaining' => (int) $r->remaining,
+                'shop' => $r->shop?->name,
+            ])->values()->all();
 
-        $mail = new CreditReminderMail($days, $count, $due, $rows, (string) config('app.name', 'StockFlow'), $planned);
+            $mail = new CreditReminderMail($days, $count, $due, $rows, $company->name, $planned);
 
-        try {
-            Mail::to($to)->queue($mail); // file configurée, ou sync = immédiat
-            $mode = 'file';
-        } catch (\Throwable) {
-            Mail::to($to)->send($mail); // repli synchrone
-            $mode = 'direct';
-        }
+            try {
+                Mail::to($to)->queue($mail); // file configurée, ou sync = immédiat
+                $mode = 'file';
+            } catch (\Throwable) {
+                Mail::to($to)->send($mail); // repli synchrone
+                $mode = 'direct';
+            }
 
-        $this->info("Digest crédits → {$to} : {$due} FCFA sur {$count} crédit(s) (+{$days} j)"
-            . (count($planned) ? ' + ' . count($planned) . ' rappel(s) planifié(s)' : '')
-            . " [{$mode}].");
+            $this->info("[{$company->name}] digest crédits → {$to} : {$due} FCFA sur {$count} crédit(s) (+{$days} j)"
+                .(count($planned) ? ' + '.count($planned).' rappel(s) planifié(s)' : '')
+                ." [{$mode}].");
+        });
 
         return self::SUCCESS;
     }
@@ -111,7 +115,7 @@ class CreditsRemindEmail extends Command
                 $last = $past[count($past) - 1];
                 $watch[(int) $customerId] = [
                     'date' => $last,
-                    'late_days' => (int) round(($today->getTimestamp() - \Illuminate\Support\Carbon::parse($last)->startOfDay()->getTimestamp()) / 86400),
+                    'late_days' => (int) round(($today->getTimestamp() - Carbon::parse($last)->startOfDay()->getTimestamp()) / 86400),
                 ];
             }
         }
@@ -127,7 +131,7 @@ class CreditsRemindEmail extends Command
             ->groupBy('customer_id')
             ->pluck('due', 'customer_id');
 
-        $names = \App\Models\Customer::whereIn('id', array_keys($watch))->pluck('name', 'id');
+        $names = Customer::whereIn('id', array_keys($watch))->pluck('name', 'id');
 
         $rows = [];
         foreach ($watch as $customerId => $w) {
@@ -137,7 +141,7 @@ class CreditsRemindEmail extends Command
             }
             $rows[] = [
                 'customer' => (string) ($names[$customerId] ?? "Client #{$customerId}"),
-                'date' => \Illuminate\Support\Carbon::parse($w['date'])->format('d/m/Y'),
+                'date' => Carbon::parse($w['date'])->format('d/m/Y'),
                 'late_days' => $w['late_days'],
                 'due' => $due,
             ];

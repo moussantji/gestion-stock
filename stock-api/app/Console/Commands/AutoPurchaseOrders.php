@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\User;
+use App\Models\Company;
 use App\Services\PurchaseOrderService;
 use App\Services\PushService;
 use Illuminate\Console\Command;
@@ -10,34 +10,40 @@ use Illuminate\Console\Command;
 /**
  * 📦 Génération AUTOMATIQUE des bons de commande fournisseurs
  * pour les produits en stock bas (un bon par fournisseur, anti-doublon).
- * Planifié chaque matin à 08:00 (voir routes/console.php).
+ * Planifié chaque matin à 08:00 — exécuté POUR CHAQUE entreprise.
  */
 class AutoPurchaseOrders extends Command
 {
     protected $signature = 'stock:auto-purchase-orders';
+
     protected $description = 'Génère les bons de commande fournisseurs pour le stock bas (anti-doublon).';
 
     public function handle(): int
     {
-        $created = PurchaseOrderService::generateFromLowStock(User::where('role', User::ROLE_ADMIN)->first());
+        $total = 0;
 
-        if (empty($created)) {
-            $this->info('✅ Rien à commander (stock OK ou déjà couvert).');
-            return self::SUCCESS;
-        }
+        Company::runForEach(function (Company $company, $admin) use (&$total) {
+            $created = PurchaseOrderService::generateFromLowStock($admin);
+            if (empty($created)) {
+                return;
+            }
 
-        $numbers = collect($created)->pluck('number')->all();
-        foreach ($numbers as $number) {
-            $this->info("📦 Bon généré : {$number}");
-        }
+            $total += count($created);
+            $numbers = collect($created)->pluck('number')->all();
+            foreach ($numbers as $number) {
+                $this->info("📦 [{$company->name}] Bon généré : {$number}");
+            }
 
-        // 🔔 Push distante vers les admins
-        $pushed = PushService::sendToAdmins(
-            '📦 Stock bas — bons de commande',
-            count($created) . ' bon(s) généré(s) automatiquement : ' . implode(', ', $numbers),
-            ['type' => 'auto_purchase_orders', 'count' => count($created)]
-        );
-        $this->info("🔔 Push envoyée à {$pushed} téléphone(s) admin.");
+            // 🔔 Push vers les admins de CETTE entreprise uniquement
+            PushService::sendToAdmins(
+                '📦 Stock bas — bons de commande',
+                count($created).' bon(s) généré(s) automatiquement : '.implode(', ', $numbers),
+                ['type' => 'auto_purchase_orders', 'count' => count($created)],
+                $company->id,
+            );
+        });
+
+        $this->info($total === 0 ? '✅ Rien à commander (stock OK ou déjà couvert).' : "✅ {$total} bon(s) généré(s) au total.");
 
         return self::SUCCESS;
     }

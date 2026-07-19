@@ -11,7 +11,9 @@ import {
   View,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { Ionicons } from '@expo/vector-icons';
 import api, { getErrorMessage } from '../api/client';
+import { mediaUrl } from '../config';
 import { useLocale } from '../context/LocaleContext';
 import { colors } from '../theme/colors';
 import Field from '../components/Field';
@@ -170,7 +172,7 @@ export default function ProductFormScreen({ route, navigation }) {
 
   const selectedCategory = categories.find((c) => c.id === categoryId);
   const selectedSupplier = suppliers.find((s) => s.id === supplierId);
-  const photoUri = photo?.uri ?? editing?.image_url ?? null;
+  const photoUri = photo?.uri ?? (editing?.image_url ? mediaUrl(editing.image_url) : null);
 
   return (
     <KeyboardAvoidingView
@@ -190,7 +192,7 @@ export default function ProductFormScreen({ route, navigation }) {
             <Image source={{ uri: photoUri }} style={styles.photo} />
           ) : (
             <View style={styles.photoPlaceholder}>
-              <Text style={{ fontSize: 30 }}>📷</Text>
+              <Ionicons name="camera-outline" size={34} color={colors.muted} />
               <Text style={styles.photoHint}>{t('pf_photo_add')}</Text>
               <Text style={styles.photoSub}>{t('pf_photo_sub')}</Text>
             </View>
@@ -224,7 +226,7 @@ export default function ProductFormScreen({ route, navigation }) {
             style={styles.scanBtn}
             onPress={() => navigation.navigate('Scanner', { mode: 'fill', returnScreen: 'ProductForm' })}
           >
-            <Text style={{ fontSize: 20 }}>📷</Text>
+            <Ionicons name="scan-outline" size={22} color={colors.text} />
           </TouchableOpacity>
         </View>
 
@@ -233,7 +235,7 @@ export default function ProductFormScreen({ route, navigation }) {
           <Text style={selectedCategory ? styles.selectText : styles.selectPlaceholder}>
             {selectedCategory ? selectedCategory.name : t('pf_none')}
           </Text>
-          <Text style={{ color: colors.muted }}>▼</Text>
+          <Ionicons name="chevron-down" size={16} color={colors.muted} />
         </TouchableOpacity>
 
         <Text style={styles.label}>{t('pf_supplier')}</Text>
@@ -241,7 +243,7 @@ export default function ProductFormScreen({ route, navigation }) {
           <Text style={selectedSupplier ? styles.selectText : styles.selectPlaceholder}>
             {selectedSupplier ? selectedSupplier.name : t('pf_none')}
           </Text>
-          <Text style={{ color: colors.muted }}>▼</Text>
+          <Ionicons name="chevron-down" size={16} color={colors.muted} />
         </TouchableOpacity>
 
         <View style={styles.row}>

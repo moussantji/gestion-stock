@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 
 /** 💵 Clôture journalière de caisse (Z). */
 class CashClosing extends Model
 {
+    use BelongsToCompany;
+
     protected $fillable = [
         'closing_date', 'total_in', 'total_out', 'sales_collected', 'balance', 'notes', 'user_id',
         'shop_id', // 🏬 Z propre à une boutique (multi-boutiques)

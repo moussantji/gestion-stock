@@ -47,7 +47,7 @@ class GoogleAuthController extends Controller
         if (! $user || ! $user->isClient()) {
             return view('google.code', [
                 'code' => null,
-                'error' => "Aucun compte client StockFlow pour {$google['email']} — commandez d'abord une formule sur " . route('home') . '.',
+                'error' => "Aucun compte client StockFlow pour {$google['email']} — commandez d'abord une formule sur ".route('home').'.',
             ]);
         }
 
@@ -55,7 +55,7 @@ class GoogleAuthController extends Controller
         if ($subscription && $subscription['state']['code'] === 'expired') {
             return view('google.code', [
                 'code' => null,
-                'error' => "Votre abonnement a expiré 🔴 Renouvelez sur " . url('/compte') . " puis recommencez la connexion.",
+                'error' => 'Votre abonnement a expiré 🔴 Renouvelez sur '.url('/compte').' puis recommencez la connexion.',
             ]);
         }
 
@@ -79,7 +79,7 @@ class GoogleAuthController extends Controller
         $one = fn (int $n) => collect(range(1, $n))->map(fn () => $alphabet[random_int(0, strlen($alphabet) - 1)])->implode('');
 
         do {
-            $code = $one(4) . '-' . $one(4);
+            $code = $one(4).'-'.$one(4);
         } while (Cache::has("gcode:{$code}"));
 
         return $code;

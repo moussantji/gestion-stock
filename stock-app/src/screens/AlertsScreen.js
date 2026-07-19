@@ -180,11 +180,11 @@ export default function AlertsScreen({ navigation }) {
           }
           ListEmptyComponent={
             view === 'forecast' ? (
-              <EmptyState icon="📈" title={t('fc_none')} subtitle={t('fc_hint')} />
+              <EmptyState ionicon="trending-up-outline" title={t('fc_none')} subtitle={t('fc_hint')} />
             ) : view === 'place' ? (
-              <EmptyState icon="📍" title={t('dash_no_alert')} subtitle={t('al_place_none')} />
+              <EmptyState ionicon="location-outline" title={t('dash_no_alert')} subtitle={t('al_place_none')} />
             ) : (
-              <EmptyState icon="🎉" title={t('dash_no_alert')} subtitle={t('al_none_sub')} />
+              <EmptyState ionicon="sparkles-outline" title={t('dash_no_alert')} subtitle={t('al_none_sub')} />
             )
           }
           ListHeaderComponent={

@@ -10,6 +10,7 @@ import {
   View,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import api, { getErrorMessage } from '../api/client';
 import { useLocale } from '../context/LocaleContext';
 import { colors } from '../theme/colors';
@@ -178,7 +179,7 @@ export default function InventoryCountScreen({ route, navigation }) {
               onPress={() => setCount(item, (counted ?? 0) - 1)}
               disabled={busy}
             >
-              <Text style={styles.stepText}>−</Text>
+              <Ionicons name="remove" size={18} color={colors.text} />
             </TouchableOpacity>
             <Text style={styles.stepQty}>
               {busy ? '…' : counted ?? 0}
@@ -188,7 +189,7 @@ export default function InventoryCountScreen({ route, navigation }) {
               onPress={() => setCount(item, (counted ?? 0) + 1)}
               disabled={busy}
             >
-              <Text style={styles.stepText}>＋</Text>
+              <Ionicons name="add" size={18} color={colors.text} />
             </TouchableOpacity>
           </View>
         ) : (
@@ -310,7 +311,7 @@ export default function InventoryCountScreen({ route, navigation }) {
         contentContainerStyle={{ padding: 16, paddingTop: 8, paddingBottom: 60 }}
         renderItem={renderItem}
         ListEmptyComponent={
-          <EmptyState icon="📋" title={t('inv_no_lines')} subtitle={t('inv_no_lines_sub')} />
+          <EmptyState ionicon="clipboard-outline" title={t('inv_no_lines')} subtitle={t('inv_no_lines_sub')} />
         }
       />
     </View>

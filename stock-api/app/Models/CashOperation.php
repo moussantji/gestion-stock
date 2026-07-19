@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 
 /** 💵 Opération manuelle de caisse (entrée ou sortie). */
 class CashOperation extends Model
 {
+    use BelongsToCompany;
+
     public const TYPE_IN = 'in';
+
     public const TYPE_OUT = 'out';
 
     // ⚠️ category + receipt_id : fillable obligatoire (sinon ignorés au create())

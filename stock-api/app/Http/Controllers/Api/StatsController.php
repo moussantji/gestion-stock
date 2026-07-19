@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\StockMovement;
 use App\Support\Setting;
+use App\Support\ShopScope;
 use App\Support\XlsxWriter;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -56,6 +57,7 @@ class StatsController extends Controller
             $period = '30d';
         }
         $days = self::PERIODS[$period];
+
         return [$period, $days ? now()->subDays($days - 1)->startOfDay() : null, null];
     }
 
@@ -69,7 +71,7 @@ class StatsController extends Controller
         [$period, $from, $to] = $this->periodFrom($request); // 📅 v2.6 : $to = borne haute dates libres
 
         // 🏬 Multi-boutiques (même périmètre que computeSales)
-        $shopId = \App\Support\ShopScope::visibleShopId($request);
+        $shopId = ShopScope::visibleShopId($request);
         $applyShop = fn ($q) => $shopId
             ? $q->where(fn ($w) => $w->where('receipts.shop_id', $shopId)->orWhereNull('receipts.shop_id'))
             : $q;
@@ -101,7 +103,7 @@ class StatsController extends Controller
             ->selectRaw('COALESCE(SUM((receipt_items.quantity - receipt_items.refunded_qty)),0) as qty, COALESCE(SUM(((receipt_items.quantity - receipt_items.refunded_qty) * receipt_items.unit_price)),0) as revenue')
             ->first();
 
-        $movements = \App\Support\ShopScope::apply(StockMovement::with('user:id,name'), $request) // 🏬
+        $movements = ShopScope::apply(StockMovement::with('user:id,name'), $request) // 🏬
             ->where('product_id', $productId)
             ->when($from, fn ($q) => $q->where('created_at', '>=', $from))
             ->when($to, fn ($q) => $q->where('created_at', '<=', $to))
@@ -179,7 +181,7 @@ class StatsController extends Controller
             [
                 'name' => 'Marges',
                 'rows' => array_merge(
-                    [['Produit', 'Qté vendue', 'CA (FCFA)', "Coût (FCFA)", 'Marge (FCFA)', 'Taux (%)']],
+                    [['Produit', 'Qté vendue', 'CA (FCFA)', 'Coût (FCFA)', 'Marge (FCFA)', 'Taux (%)']],
                     array_map(
                         fn ($p) => [$p['name'], $p['qty'], $p['revenue'], $p['cost'], $p['margin'], $p['rate']],
                         $margins['products']
@@ -222,11 +224,11 @@ class StatsController extends Controller
         if (! is_dir($dir)) {
             mkdir($dir, 0775, true);
         }
-        $path = $dir . '/stats-' . $data['period'] . '-' . now()->format('Ymd-His') . '.xlsx';
+        $path = $dir.'/stats-'.$data['period'].'-'.now()->format('Ymd-His').'.xlsx';
 
         XlsxWriter::write($path, $sheets);
 
-        return response()->download($path, 'stats-ventes-' . $data['period'] . '.xlsx', [
+        return response()->download($path, 'stats-ventes-'.$data['period'].'.xlsx', [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         ])->deleteFileAfterSend(true);
     }
@@ -240,7 +242,7 @@ class StatsController extends Controller
         [$period, $from, $to] = $this->periodFrom($request); // 📅 v2.6 : $to = borne haute dates libres
 
         // 🏬 Multi-boutiques (même périmètre que computeSales)
-        $shopId = \App\Support\ShopScope::visibleShopId($request);
+        $shopId = ShopScope::visibleShopId($request);
         $applyShop = fn ($q) => $shopId
             ? $q->where(fn ($w) => $w->where('receipts.shop_id', $shopId)->orWhereNull('receipts.shop_id'))
             : $q;
@@ -325,7 +327,7 @@ class StatsController extends Controller
         [$period, $from, $to] = $this->periodFrom($request); // ($from/$to = bornes v2.6 dates libres)
 
         // 🏬 Multi-boutiques : borne toutes les requêtes ci-dessous
-        $shopId = \App\Support\ShopScope::visibleShopId($request);
+        $shopId = ShopScope::visibleShopId($request);
         $applyShop = fn ($q) => $shopId
             ? $q->where(fn ($w) => $w->where('receipts.shop_id', $shopId)->orWhereNull('receipts.shop_id'))
             : $q;
@@ -376,7 +378,7 @@ class StatsController extends Controller
         $products = $productRows->map(fn ($row) => [
             'product_id' => $row->product_id,
             'name' => $row->name, // snapshot (même si le produit a été renommé/supprimé)
-            'image_url' => $row->image_path ? asset('storage/' . $row->image_path) : null,
+            'image_url' => $row->image_path ? asset('storage/'.$row->image_path) : null,
             'qty' => (int) $row->qty,
             'revenue' => (int) $row->revenue,
             'receipts_count' => (int) $row->receipts_count,

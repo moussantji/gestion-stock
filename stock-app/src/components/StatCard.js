@@ -1,13 +1,19 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
 
-/** Petite carte de statistique pour le tableau de bord. */
-export default function StatCard({ icon, label, value, color = colors.primary, style }) {
+/** Petite carte de statistique pour le tableau de bord.
+ *  `ionicon` (nom Ionicons) = rendu vectoriel premium ; `icon` (emoji) = repli. */
+export default function StatCard({ icon, ionicon, label, value, color = colors.primary, style }) {
   return (
     <View style={[styles.card, style]}>
       <View style={[styles.iconWrap, { backgroundColor: color + '1A' }]}>
-        <Text style={{ fontSize: 18 }}>{icon}</Text>
+        {ionicon ? (
+          <Ionicons name={ionicon} size={18} color={color} />
+        ) : (
+          <Text style={{ fontSize: 18 }}>{icon}</Text>
+        )}
       </View>
       <Text style={[styles.value, { color }]} numberOfLines={1} adjustsFontSizeToFit>
         {value}

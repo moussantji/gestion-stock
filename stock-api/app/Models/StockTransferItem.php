@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 
 class StockTransferItem extends Model
 {
+    use BelongsToCompany;
+
     protected $fillable = ['stock_transfer_id', 'product_id', 'quantity'];
 
     protected function casts(): array

@@ -1,6 +1,8 @@
 // ============================================================
 // STOCKFLOW — Thème sombre premium
 // ============================================================
+import { DarkTheme as NavDarkTheme } from '@react-navigation/native';
+
 export const colors = {
   primary: '#7C5CFF',
   primaryDark: '#6846F0',
@@ -27,10 +29,15 @@ export const colors = {
   infoBg: 'rgba(56,189,248,0.12)',
 };
 
-// Thème React Navigation correspondant (évite les flashs blancs)
+// Thème React Navigation correspondant (évite les flashs blancs).
+// ⚠️ On étend NavDarkTheme pour hériter de `fonts` (regular/medium/bold/heavy) :
+// React Navigation v7 lit theme.fonts.regular → sans lui, crash
+// « Cannot read property 'regular' of undefined ».
 export const navTheme = {
+  ...NavDarkTheme,
   dark: true,
   colors: {
+    ...NavDarkTheme.colors,
     primary: colors.primary,
     background: colors.bg,
     card: colors.bgAlt,
@@ -44,4 +51,5 @@ export const ROLE_LABELS = {
   admin: 'Administrateur',
   manager: 'Gestionnaire',
   employee: 'Employé',
+  client: 'Client',
 };

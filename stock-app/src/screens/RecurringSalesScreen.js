@@ -219,7 +219,7 @@ export default function RecurringSalesScreen() {
   if (!hasRole('admin', 'manager')) {
     return (
       <View style={[styles.container, styles.center]}>
-        <EmptyState icon="🔒" title={t('set_forbidden')} />
+        <EmptyState ionicon="lock-closed-outline" title={t('set_forbidden')} />
       </View>
     );
   }
@@ -302,7 +302,7 @@ export default function RecurringSalesScreen() {
           <View style={styles.errorBox}><Text style={styles.errorText}>{error}</Text></View>
         ) : null}
         ListEmptyComponent={
-          <EmptyState icon="🔁" title={t('rs_empty')} subtitle={t('rs_empty_sub')} />
+          <EmptyState ionicon="repeat-outline" title={t('rs_empty')} subtitle={t('rs_empty_sub')} />
         }
       />
 

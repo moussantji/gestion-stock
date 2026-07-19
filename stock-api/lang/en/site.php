@@ -3,9 +3,11 @@
 return [
     // ---------- Navigation ----------
     'nav_features' => 'Features',
+    'nav_features_short' => 'Features',
     'nav_pricing' => 'Pricing',
     'nav_faq' => 'FAQ',
     'nav_check' => 'My account',
+    'nav_check_short' => 'Account',
     'nav_buy' => 'Buy a subscription',
     'nav_home' => 'Home',
 
@@ -113,7 +115,6 @@ return [
     'email_note' => 'Your login credentials will be sent to :email. Track everything on',
     'verify_page' => 'your client area',
     'back_home' => '← Back to home',
-
 
     // ---------- 👤 Client portal (v2.14) ----------
     'client_login_title' => '👤 Client area',

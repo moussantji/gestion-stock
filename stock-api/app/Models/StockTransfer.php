@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 /**
  * 🔁🚚 Transfert de stock entre deux emplacements (siège <=> boutique).
@@ -15,8 +17,12 @@ use Illuminate\Database\Eloquent\Model;
  */
 class StockTransfer extends Model
 {
+    use BelongsToCompany;
+
     public const STATUS_IN_TRANSIT = 'in_transit';
+
     public const STATUS_RECEIVED = 'received';
+
     public const STATUS_CANCELLED = 'cancelled';
 
     protected $fillable = [
@@ -86,7 +92,7 @@ class StockTransfer extends Model
     public static function generateReference(): string
     {
         do {
-            $reference = 'TR-' . now()->format('Y') . '-' . strtoupper(\Illuminate\Support\Str::random(6));
+            $reference = 'TR-'.now()->format('Y').'-'.strtoupper(Str::random(6));
         } while (static::where('reference', $reference)->exists());
 
         return $reference;

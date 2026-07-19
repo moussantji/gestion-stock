@@ -12,6 +12,7 @@ import {
   View,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import api, { getErrorMessage } from '../api/client';
 import { SERVER_URL } from '../config';
@@ -259,17 +260,17 @@ export default function AdminScreen() {
     return (
       <>
         <View style={styles.grid}>
-          <StatCard icon="💰" label="Revenu total" value={formatMoney(s.revenue_total)} color={colors.primary} style={{ marginRight: 8 }} />
-          <StatCard icon="📈" label="Revenu ce mois" value={formatMoney(s.revenue_month)} color={colors.success} style={{ marginLeft: 8 }} />
+          <StatCard ionicon="cash" label="Revenu total" value={formatMoney(s.revenue_total)} color={colors.primary} style={{ marginRight: 8 }} />
+          <StatCard ionicon="trending-up" label="Revenu ce mois" value={formatMoney(s.revenue_month)} color={colors.success} style={{ marginLeft: 8 }} />
         </View>
         <View style={[styles.grid, { marginTop: 12 }]}>
-          <StatCard icon="🧾" label="Cmd. en attente" value={s.orders_pending} color={colors.warning} style={{ marginRight: 8 }} />
-          <StatCard icon="👤" label="Abonnements actifs" value={s.licenses_active} color={colors.accent} style={{ marginHorizontal: 8 }} />
-          <StatCard icon="👥" label="Utilisateurs" value={s.users_count} color={colors.info} style={{ marginLeft: 8 }} />
+          <StatCard ionicon="receipt" label="Cmd. en attente" value={s.orders_pending} color={colors.warning} style={{ marginRight: 8 }} />
+          <StatCard ionicon="ribbon" label="Abonnements actifs" value={s.licenses_active} color={colors.accent} style={{ marginHorizontal: 8 }} />
+          <StatCard ionicon="people" label="Utilisateurs" value={s.users_count} color={colors.info} style={{ marginLeft: 8 }} />
         </View>
         <View style={[styles.grid, { marginTop: 12 }]}>
-          <StatCard icon="📦" label="Produits" value={s.products_count} color={colors.primary} style={{ marginRight: 8 }} />
-          <StatCard icon="⚠️" label="Stock bas" value={s.low_stock_count} color={colors.warning} style={{ marginLeft: 8 }} />
+          <StatCard ionicon="cube" label="Produits" value={s.products_count} color={colors.primary} style={{ marginRight: 8 }} />
+          <StatCard ionicon="warning" label="Stock bas" value={s.low_stock_count} color={colors.warning} style={{ marginLeft: 8 }} />
         </View>
 
         {/* 🏪 Boutique — logo affiché sur les reçus PDF */}
@@ -280,7 +281,7 @@ export default function AdminScreen() {
               <Image source={{ uri: shop.logo_url }} style={styles.logoPreview} />
             ) : (
               <View style={[styles.logoPreview, styles.logoPlaceholder]}>
-                <Text style={{ fontSize: 24 }}>🏪</Text>
+                <Ionicons name="storefront" size={26} color={colors.muted} />
               </View>
             )}
             <View style={{ flex: 1, marginLeft: 12 }}>
@@ -323,14 +324,14 @@ export default function AdminScreen() {
             </View>
           ))
         ) : (
-          <EmptyState icon="🎉" title={t('adm_no_expiring')} />
+          <EmptyState ionicon="sparkles-outline" title={t('adm_no_expiring')} />
         )}
 
         <Text style={styles.sectionTitle}>Dernières commandes</Text>
         {overview.recent_orders?.length ? (
           overview.recent_orders.map((o) => renderOrderCard(o, true))
         ) : (
-          <EmptyState icon="🧾" title="Aucune commande" subtitle="Les commandes du site apparaîtront ici." />
+          <EmptyState ionicon="receipt-outline" title="Aucune commande" subtitle="Les commandes du site apparaîtront ici." />
         )}
       </>
     );
@@ -422,7 +423,7 @@ export default function AdminScreen() {
           );
         })
       ) : (
-        <EmptyState icon="👤" title={t('ac_no_subs')} subtitle={t('ac_no_subs_sub')} />
+        <EmptyState ionicon="person-outline" title={t('ac_no_subs')} subtitle={t('ac_no_subs_sub')} />
       )}
     </>
   );
@@ -467,7 +468,7 @@ export default function AdminScreen() {
         >
           {tab === 'overview' && renderOverview()}
           {tab === 'orders' && (orders.length ? orders.map((o) => renderOrderCard(o)) : (
-            <EmptyState icon="🧾" title="Aucune commande" subtitle="Les commandes du site apparaîtront ici." />
+            <EmptyState ionicon="receipt-outline" title="Aucune commande" subtitle="Les commandes du site apparaîtront ici." />
           ))}
           {tab === 'licenses' && renderLicenses()}
         </ScrollView>

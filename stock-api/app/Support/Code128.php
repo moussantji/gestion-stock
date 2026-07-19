@@ -25,6 +25,7 @@ class Code128
     ];
 
     private const START_B = 104;
+
     private const STOP = 106;
 
     /**
@@ -49,6 +50,7 @@ class Code128
 
     /**
      * Rendu HTML inline : une série de <span> noirs/blancs (dompdf-friendly).
+     *
      * @return string HTML (sans échappement — largeurs uniquement)
      */
     public static function renderHtml(string $text, int $heightPx = 38, float $unitPx = 1.4): string
@@ -60,16 +62,16 @@ class Code128
             foreach (str_split($pattern) as $width) {
                 $w = round(((int) $width) * $unitPx, 1);
                 $bg = $isBar ? '#000' : '#fff';
-                $html .= '<span style="display:inline-block;width:' . $w . 'px;height:' . $heightPx
-                    . 'px;background-color:' . $bg . ';"></span>';
+                $html .= '<span style="display:inline-block;width:'.$w.'px;height:'.$heightPx
+                    .'px;background-color:'.$bg.';"></span>';
                 $isBar = ! $isBar;
             }
         }
 
         // Zone silencieuse finale (10 modules)
-        $html .= '<span style="display:inline-block;width:' . round(10 * $unitPx, 1)
-            . 'px;height:' . $heightPx . 'px;background-color:#fff;"></span>';
+        $html .= '<span style="display:inline-block;width:'.round(10 * $unitPx, 1)
+            .'px;height:'.$heightPx.'px;background-color:#fff;"></span>';
 
-        return $html . '</div>';
+        return $html.'</div>';
     }
 }

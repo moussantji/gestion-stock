@@ -13,7 +13,7 @@ class GoogleTokenVerifier
 {
     /**
      * @return array{email:string, name:string}|null null si jeton invalide,
-     *         audience incorrecte ou Google non configuré.
+     *                                               audience incorrecte ou Google non configuré.
      */
     public static function verify(string $idToken): ?array
     {

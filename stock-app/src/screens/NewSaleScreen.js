@@ -16,7 +16,9 @@ import {
   View,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import api, { getErrorMessage } from '../api/client';
+import { mediaUrl } from '../config';
 import { useLocale } from '../context/LocaleContext';
 import { uuid } from '../utils/offlineQueue';
 import { listQuotes, removeQuote, saveQuote, buildQuoteText } from '../utils/quotes'; // 🧾 v21 (v2.10)
@@ -339,9 +341,9 @@ export default function NewSaleScreen({ navigation }) {
               <TouchableOpacity key={p.id} style={styles.resultRow} onPress={() => addToCart(p)}>
                 {/* 📸 v2.9 : vignette produit (placeholder 📦 si absente) */}
                 {p.image_url ? (
-                  <Image source={{ uri: p.image_url }} style={styles.resultThumb} />
+                  <Image source={{ uri: mediaUrl(p.image_url) }} style={styles.resultThumb} />
                 ) : (
-                  <View style={[styles.resultThumb, styles.thumbPh]}><Text style={{ fontSize: 15 }}>📦</Text></View>
+                  <View style={[styles.resultThumb, styles.thumbPh]}><Ionicons name="cube-outline" size={16} color={colors.muted} /></View>
                 )}
                 <View style={{ flex: 1 }}>
                   <Text style={styles.resultName} numberOfLines={1}>{p.name}</Text>
@@ -356,7 +358,7 @@ export default function NewSaleScreen({ navigation }) {
                     <Text style={styles.resultMeta}>{formatMoney(p.sale_price)} · {effQty(p)} dispo</Text>
                   )}
                 </View>
-                <Text style={styles.addBtn}>＋</Text>
+                <Ionicons name="add-circle" size={26} color={colors.primary} style={{ paddingHorizontal: 4 }} />
               </TouchableOpacity>
             ))}
           </View>
@@ -372,7 +374,7 @@ export default function NewSaleScreen({ navigation }) {
         </View>
         {cart.length === 0 ? (
           <View style={styles.emptyCart}>
-            <Text style={{ fontSize: 34 }}>🛒</Text>
+            <Ionicons name="cart-outline" size={40} color={colors.muted} />
             <Text style={styles.emptyTitle}>{t('sale_cart_empty')}</Text>
             <Text style={styles.emptySub}>{t('sale_cart_hint')}</Text>
           </View>
@@ -382,9 +384,9 @@ export default function NewSaleScreen({ navigation }) {
               <View key={item.product_id} style={styles.cartRow}>
                 {/* 📸 v2.9 : vignette de la ligne panier */}
                 {item.image_url ? (
-                  <Image source={{ uri: item.image_url }} style={styles.cartThumb} />
+                  <Image source={{ uri: mediaUrl(item.image_url) }} style={styles.cartThumb} />
                 ) : (
-                  <View style={[styles.cartThumb, styles.thumbPh]}><Text style={{ fontSize: 13 }}>📦</Text></View>
+                  <View style={[styles.cartThumb, styles.thumbPh]}><Ionicons name="cube-outline" size={14} color={colors.muted} /></View>
                 )}
                 <View style={{ flex: 1 }}>
                   <Text style={styles.cartName} numberOfLines={1}>{item.name}</Text>
@@ -397,15 +399,15 @@ export default function NewSaleScreen({ navigation }) {
                 </View>
                 <View style={styles.stepper}>
                   <TouchableOpacity style={styles.stepBtn} onPress={() => updateQty(item.product_id, -1)}>
-                    <Text style={styles.stepText}>−</Text>
+                    <Ionicons name="remove" size={18} color={colors.text} />
                   </TouchableOpacity>
                   <Text style={styles.stepQty}>{item.quantity}</Text>
                   <TouchableOpacity style={styles.stepBtn} onPress={() => updateQty(item.product_id, 1)}>
-                    <Text style={styles.stepText}>＋</Text>
+                    <Ionicons name="add" size={18} color={colors.text} />
                   </TouchableOpacity>
                 </View>
                 <TouchableOpacity onPress={() => removeItem(item.product_id)} hitSlop={8} style={{ marginLeft: 10 }}>
-                  <Text style={{ fontSize: 16 }}>🗑</Text>
+                  <Ionicons name="trash-outline" size={18} color={colors.danger} />
                 </TouchableOpacity>
               </View>
             ))}
@@ -449,7 +451,7 @@ export default function NewSaleScreen({ navigation }) {
                 {customer.phone ? <Text style={styles.customerChipPhone}>{customer.phone}</Text> : null}
               </View>
               <TouchableOpacity onPress={clearCustomer} hitSlop={10}>
-                <Text style={styles.customerChipRemove}>✕</Text>
+                <Ionicons name="close" size={18} color={colors.muted} />
               </TouchableOpacity>
             </View>
 
@@ -555,7 +557,7 @@ export default function NewSaleScreen({ navigation }) {
             <View style={styles.quoteHead}>
               <Text style={styles.quoteTitle}>🧾 {t('q_title')}</Text>
               <TouchableOpacity onPress={() => setQuotesOpen(false)} hitSlop={8}>
-                <Text style={{ fontSize: 17, color: colors.muted }}>✕</Text>
+                <Ionicons name="close" size={20} color={colors.muted} />
               </TouchableOpacity>
             </View>
             <TouchableOpacity style={styles.quoteSave} onPress={saveQuoteDraft} disabled={cart.length === 0}>
@@ -576,13 +578,13 @@ export default function NewSaleScreen({ navigation }) {
                   </View>
                   <Text style={styles.quoteTotal}>{formatMoney(q.total)}</Text>
                   <TouchableOpacity onPress={() => shareQuote(q)} hitSlop={6} style={styles.quoteAction} accessibilityLabel={t('q_share')}>
-                    <Text style={{ fontSize: 15 }}>📤</Text>
+                    <Ionicons name="share-social-outline" size={17} color={colors.text} />
                   </TouchableOpacity>
                   <TouchableOpacity onPress={() => loadQuote(q)} hitSlop={6} style={styles.quoteAction} accessibilityLabel={t('q_load')}>
-                    <Text style={{ fontSize: 15 }}>↩️</Text>
+                    <Ionicons name="arrow-undo-outline" size={17} color={colors.accent} />
                   </TouchableOpacity>
                   <TouchableOpacity onPress={() => deleteQuote(q)} hitSlop={6} style={styles.quoteAction}>
-                    <Text style={{ fontSize: 14 }}>🗑</Text>
+                    <Ionicons name="trash-outline" size={16} color={colors.danger} />
                   </TouchableOpacity>
                 </View>
               ))}

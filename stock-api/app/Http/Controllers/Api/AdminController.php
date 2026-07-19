@@ -76,8 +76,8 @@ class AdminController extends Controller
 
         return response()->json([
             'message' => $result['extended']
-                ? "Paiement validé : abonnement prolongé jusqu'au " . $license->expires_at->format('d/m/Y') . '.'
-                : "Paiement validé : abonnement actif jusqu'au " . $license->expires_at->format('d/m/Y') . '.',
+                ? "Paiement validé : abonnement prolongé jusqu'au ".$license->expires_at->format('d/m/Y').'.'
+                : "Paiement validé : abonnement actif jusqu'au ".$license->expires_at->format('d/m/Y').'.',
             // 👤 Tout pour informer le client — le mot de passe en clair n'est transmis QU'ICI (création de compte)
             'subscription' => [
                 'email' => $license->buyer_email,

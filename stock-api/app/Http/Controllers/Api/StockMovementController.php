@@ -6,9 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreStockMovementRequest;
 use App\Models\Product;
 use App\Models\StockMovement;
+use App\Support\ShopScope;
+use App\Support\ShopStock;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException;
 
 class StockMovementController extends Controller
 {
@@ -22,7 +23,7 @@ class StockMovementController extends Controller
             'user:id,name',
         ])->latest();
 
-        \App\Support\ShopScope::apply($query, $request); // 🏬 multi-boutiques
+        ShopScope::apply($query, $request); // 🏬 multi-boutiques
 
         if ($request->filled('type') && in_array($request->query('type'), ['in', 'out', 'transfer_in', 'transfer_out'], true)) {
             $query->where('type', $request->query('type')); // 🔁 v13 : types transfert filtrables
@@ -66,16 +67,16 @@ class StockMovementController extends Controller
 
         $movement = DB::transaction(function () use ($data, $request) {
             $product = Product::whereKey($data['product_id'])->lockForUpdate()->firstOrFail();
-            $shopId = \App\Support\ShopScope::currentShopId($request); // 🏬 emplacement du mouvement
+            $shopId = ShopScope::currentShopId($request); // 🏬 emplacement du mouvement
 
             // 🏬📦 v13 : vérifie le stock DE L'EMPLACEMENT (boutique / siège)
             if ($data['type'] === StockMovement::TYPE_OUT) {
-                \App\Support\ShopStock::assertAvailable($product, $shopId, $data['quantity']);
+                ShopStock::assertAvailable($product, $shopId, $data['quantity']);
             }
 
             // Bucket boutique si rattaché à une boutique, sinon siège (= reste du global)
             if ($shopId !== null) {
-                \App\Support\ShopStock::addDelta(
+                ShopStock::addDelta(
                     $product,
                     $shopId,
                     $data['type'] === StockMovement::TYPE_IN ? $data['quantity'] : -$data['quantity']

@@ -11,7 +11,9 @@ class Order extends Model
     use HasFactory;
 
     public const STATUS_PENDING = 'pending';
+
     public const STATUS_PAID = 'paid';
+
     public const STATUS_CANCELLED = 'cancelled';
 
     protected $fillable = [
@@ -39,7 +41,7 @@ class Order extends Model
     public static function generateReference(): string
     {
         do {
-            $ref = 'CMD-' . now()->format('Y') . '-' . strtoupper(Str::random(6));
+            $ref = 'CMD-'.now()->format('Y').'-'.strtoupper(Str::random(6));
         } while (static::where('reference', $ref)->exists());
 
         return $ref;
@@ -47,7 +49,7 @@ class Order extends Model
 
     public function getFormattedAmountAttribute(): string
     {
-        return number_format($this->amount, 0, ',', ' ') . ' FCFA';
+        return number_format($this->amount, 0, ',', ' ').' FCFA';
     }
 
     public function isPending(): bool

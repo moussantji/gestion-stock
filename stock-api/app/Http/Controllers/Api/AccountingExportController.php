@@ -8,8 +8,10 @@ use App\Mail\WeeklyRecapMail;
 use App\Models\CashClosing;
 use App\Models\CashOperation;
 use App\Models\Receipt;
+use App\Models\Shop;
 use App\Support\Setting;
 use App\Support\ShopScope;
+use App\Support\Tva;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
@@ -76,6 +78,7 @@ class AccountingExportController extends Controller
 
     /**
      * 🧮 Agrégats d'une plage [from, to] (réutilisés par summary ET le bilan hebdo email).
+     *
      * @return array{receipts: array, cash: array, closings: array}
      */
     private function recapData(Request $request, string $from, string $to, ?array $range): array
@@ -96,7 +99,7 @@ class AccountingExportController extends Controller
         if ($range) {
             $closingsQ->whereBetween('closing_date', [$range[0], $range[1]]); // 🧮 v2.1
         } else {
-            $closingsQ->where('closing_date', 'like', substr($from, 0, 7) . '-%');
+            $closingsQ->where('closing_date', 'like', substr($from, 0, 7).'-%');
         }
         $days = ShopScope::apply($closingsQ, $request)->get()->map(fn ($z) => [
             'date' => is_string($z->closing_date) ? substr($z->closing_date, 0, 10) : $z->closing_date?->format('Y-m-d'),
@@ -132,7 +135,7 @@ class AccountingExportController extends Controller
 
         // 👥 v2.9 : commissions vendeurs de la période (clé additive ; taux 0 = bloc vide,
         // 0 requête supplémentaire quand la commission n'est pas configurée).
-        $commissionPct = (int) \App\Support\Setting::get('commission_pct', 0);
+        $commissionPct = (int) Setting::get('commission_pct', 0);
         $commissions = ['pct' => $commissionPct, 'sellers' => [], 'total' => 0];
         if ($commissionPct > 0) {
             $comRows = ShopScope::apply(
@@ -205,7 +208,7 @@ class AccountingExportController extends Controller
         }
 
         $shopId = ShopScope::currentShopId($request);
-        $shopName = ($shopId ? \App\Models\Shop::find($shopId)?->name : null)
+        $shopName = ($shopId ? Shop::find($shopId)?->name : null)
             ?: $request->user()?->shop?->name
             ?: config('app.name', 'StockFlow');
 
@@ -258,7 +261,7 @@ class AccountingExportController extends Controller
         }
 
         $shopId = ShopScope::currentShopId($request);
-        $shopName = ($shopId ? \App\Models\Shop::find($shopId)?->name : null)
+        $shopName = ($shopId ? Shop::find($shopId)?->name : null)
             ?: $request->user()?->shop?->name
             ?: config('app.name', 'StockFlow');
 
@@ -286,8 +289,8 @@ class AccountingExportController extends Controller
     private function receipts(Request $request, string $month, string $from, string $to): mixed
     {
         $file = "ventes-{$month}.csv";
-        $tvaOn = \App\Support\Tva::config()['enabled']; // 🧮 v2.9 : colonnes additives quand la TVA est configurée
-        $callback = function () use ($request, $from, $to, $month, $tvaOn) {
+        $tvaOn = Tva::config()['enabled']; // 🧮 v2.9 : colonnes additives quand la TVA est configurée
+        $callback = function () use ($request, $from, $to, $tvaOn) {
             $out = fopen('php://output', 'w');
             fwrite($out, "\xEF\xBB\xBF"); // BOM Excel fr
             fputcsv($out, array_merge([
@@ -319,7 +322,7 @@ class AccountingExportController extends Controller
                         $statuses[$r->status] ?? $r->status,
                     ];
                     if ($tvaOn) { // 🧮 v2.9 : ventilation du reçu (2 colonnes en fin de ligne)
-                        $bk = \App\Support\Tva::breakdown($r->items);
+                        $bk = Tva::breakdown($r->items);
                         $line[] = $bk['total_ht'];
                         $line[] = $bk['total_tva'];
                     }

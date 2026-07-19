@@ -78,7 +78,7 @@
         </a>
         <a href="{{ route('home') }}#fonctionnalites" class="bottom-nav-item">
             <span class="bn-icon">✨</span>
-            <span class="bn-label">@lang('site.nav_features')</span>
+            <span class="bn-label">@lang('site.nav_features_short')</span>
         </a>
         <a href="{{ route('home') }}#tarifs" class="bottom-nav-item bottom-nav-cta">
             <span class="bn-icon bn-cta-icon">⚡</span>
@@ -90,7 +90,7 @@
         </a>
         <a href="{{ route('client.login') }}" class="bottom-nav-item {{ request()->routeIs('client.*') ? 'active' : '' }}">
             <span class="bn-icon">👤</span>
-            <span class="bn-label">@lang('site.nav_check')</span>
+            <span class="bn-label">@lang('site.nav_check_short')</span>
         </a>
     </nav>
 

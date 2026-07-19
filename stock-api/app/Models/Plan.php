@@ -34,6 +34,6 @@ class Plan extends Model
 
     public function getFormattedPriceAttribute(): string
     {
-        return number_format($this->price, 0, ',', ' ') . ' FCFA';
+        return number_format($this->price, 0, ',', ' ').' FCFA';
     }
 }

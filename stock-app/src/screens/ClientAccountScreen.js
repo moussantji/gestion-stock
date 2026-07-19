@@ -11,6 +11,7 @@ import {
   View,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { useLocale } from '../context/LocaleContext';
 import { SERVER_URL } from '../config';
@@ -74,7 +75,7 @@ export default function ClientAccountScreen() {
     >
       {/* En-tête */}
       <View style={styles.header}>
-        <View style={styles.logoMark}><Text style={{ fontSize: 22, color: '#fff' }}>👤</Text></View>
+        <View style={styles.logoMark}><Ionicons name="person" size={26} color="#fff" /></View>
         <Text style={styles.title}>{t('cl_title')}</Text>
         <Text style={styles.subtitle}>{user?.name} · {user?.email}</Text>
       </View>
@@ -118,7 +119,7 @@ export default function ClientAccountScreen() {
         </View>
       ) : (
         <View style={styles.card}>
-          <Text style={{ textAlign: 'center', fontSize: 34 }}>🌱</Text>
+          <View style={{ alignItems: 'center' }}><Ionicons name="leaf-outline" size={34} color={colors.success} /></View>
           <Text style={styles.noSubTitle}>{t('ac_no_subs')}</Text>
           <Text style={styles.hint}>{t('cl_no_sub_hint')}</Text>
         </View>

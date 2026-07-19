@@ -11,10 +11,11 @@ class License extends Model
     use HasFactory;
 
     public const STATUS_ACTIVE = 'active';
+
     public const STATUS_REVOKED = 'revoked';
 
     protected $fillable = [
-        'key', 'order_id', 'buyer_name', 'buyer_email',
+        'company_id', 'key', 'order_id', 'buyer_name', 'buyer_email',
         'plan_name', 'price', 'starts_at', 'expires_at', 'status',
     ];
 
@@ -36,6 +37,11 @@ class License extends Model
         return $this->belongsTo(Order::class);
     }
 
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
+
     /** active | expired | revoked (état réel calculé) */
     public function getEffectiveStatusAttribute(): string
     {
@@ -55,12 +61,14 @@ class License extends Model
 
     /** Jours d'avertissement avant expiration (« expire bientôt ») et de grâce après. */
     public const EXPIRING_SOON_DAYS = 7;
+
     public const GRACE_DAYS = 3;
 
     /**
      * État d'abonnement calculé pour le portail client.
+     *
      * @return array{code:string, days_left:int|null, grace_left:int|null}
-     *   code ∈ active | expiring (≤ 7 j) | grace (expiré ≤ 3 j) | expired | revoked
+     *                                                                     code ∈ active | expiring (≤ 7 j) | grace (expiré ≤ 3 j) | expired | revoked
      */
     public function subscriptionState(): array
     {
@@ -97,9 +105,9 @@ class License extends Model
     {
         do {
             $key = 'SF-'
-                . strtoupper(Str::random(4)) . '-'
-                . strtoupper(Str::random(4)) . '-'
-                . strtoupper(Str::random(4));
+                .strtoupper(Str::random(4)).'-'
+                .strtoupper(Str::random(4)).'-'
+                .strtoupper(Str::random(4));
         } while (static::where('key', $key)->exists());
 
         return $key;

@@ -14,6 +14,7 @@ import {
 import * as SecureStore from 'expo-secure-store';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
+import { Ionicons } from '@expo/vector-icons';
 import api, { getErrorMessage } from '../api/client';
 import { SERVER_URL } from '../config';
 import { useAuth } from '../context/AuthContext';
@@ -23,12 +24,16 @@ import { colors, ROLE_LABELS } from '../theme/colors';
 import Field from '../components/Field';
 import PrimaryButton from '../components/PrimaryButton';
 
-function MenuItem({ icon, label, onPress, danger, right }) {
+function MenuItem({ icon, ionicon, label, onPress, danger, right }) {
   return (
     <TouchableOpacity style={styles.menuItem} onPress={onPress} activeOpacity={0.7}>
-      <Text style={{ fontSize: 18 }}>{icon}</Text>
+      {ionicon ? (
+        <Ionicons name={ionicon} size={20} color={danger ? colors.danger : colors.primary} style={styles.menuIcon} />
+      ) : (
+        <Text style={{ fontSize: 18 }}>{icon}</Text>
+      )}
       <Text style={[styles.menuLabel, danger && { color: colors.danger }]}>{label}</Text>
-      {right ?? <Text style={{ color: colors.muted }}>›</Text>}
+      {right ?? <Ionicons name="chevron-forward" size={18} color={colors.muted} />}
     </TouchableOpacity>
   );
 }
@@ -132,29 +137,29 @@ export default function ProfileScreen({ navigation }) {
       {/* Gestion */}
       <Text style={styles.sectionTitle}>{t('prof_management')}</Text>
       <View style={styles.menuCard}>
-        <MenuItem icon="🏷" label={t('prof_categories')} onPress={() => navigation.navigate('Categories')} />
-        <MenuItem icon="🚚" label={t('prof_suppliers')} onPress={() => navigation.navigate('Suppliers')} />
-        <MenuItem icon="👥" label={t('prof_customers')} onPress={() => navigation.navigate('Customers')} />
+        <MenuItem ionicon="pricetags-outline" label={t('prof_categories')} onPress={() => navigation.navigate('Categories')} />
+        <MenuItem ionicon="business-outline" label={t('prof_suppliers')} onPress={() => navigation.navigate('Suppliers')} />
+        <MenuItem ionicon="people-outline" label={t('prof_customers')} onPress={() => navigation.navigate('Customers')} />
         {hasRole('admin', 'manager') ? (
-          <MenuItem icon="🔁" label={t('prof_transfers')} onPress={() => navigation.navigate('Transfers')} />
+          <MenuItem ionicon="repeat-outline" label={t('prof_transfers')} onPress={() => navigation.navigate('Transfers')} />
         ) : null}
         {hasRole('admin', 'manager') ? (
-          <MenuItem icon="📋" label={t('prof_inventories')} onPress={() => navigation.navigate('Inventories')} />
+          <MenuItem ionicon="clipboard-outline" label={t('prof_inventories')} onPress={() => navigation.navigate('Inventories')} />
         ) : null}
         {hasRole('admin', 'manager') ? (
-          <MenuItem icon="💵" label={t('prof_cash')} onPress={() => navigation.navigate('Cash')} />
+          <MenuItem ionicon="cash-outline" label={t('prof_cash')} onPress={() => navigation.navigate('Cash')} />
         ) : null}
         {hasRole('admin', 'manager') ? (
-          <MenuItem icon="🔁" label={t('prof_recurring')} onPress={() => navigation.navigate('RecurringSales')} />
+          <MenuItem ionicon="calendar-outline" label={t('prof_recurring')} onPress={() => navigation.navigate('RecurringSales')} />
         ) : null}
         {hasRole('admin', 'manager') ? (
-          <MenuItem icon="🎯" label={t('prof_shop_settings')} onPress={() => navigation.navigate('ShopSettings')} />
+          <MenuItem ionicon="options-outline" label={t('prof_shop_settings')} onPress={() => navigation.navigate('ShopSettings')} />
         ) : null}
         {hasRole('admin') ? (
-          <MenuItem icon="🏬" label={t('prof_shops')} onPress={() => navigation.navigate('Shops')} />
+          <MenuItem ionicon="storefront-outline" label={t('prof_shops')} onPress={() => navigation.navigate('Shops')} />
         ) : null}
         {hasRole('admin') ? (
-          <MenuItem icon="👥" label={t('prof_users')} onPress={() => navigation.navigate('Users')} />
+          <MenuItem ionicon="person-circle-outline" label={t('prof_users')} onPress={() => navigation.navigate('Users')} />
         ) : null}
       </View>
 
@@ -164,13 +169,13 @@ export default function ProfileScreen({ navigation }) {
           <Text style={styles.sectionTitle}>{t('prof_exports')}</Text>
           <View style={styles.menuCard}>
             <MenuItem
-              icon="📦"
+              ionicon="cube-outline"
               label={t('prof_export_products')}
               onPress={() => exportCsv('products')}
               right={exporting === 'products' ? <ActivityIndicator size="small" color={colors.primary} /> : null}
             />
             <MenuItem
-              icon="🔄"
+              ionicon="sync-outline"
               label={t('prof_export_movements')}
               onPress={() => exportCsv('movements')}
               right={exporting === 'movements' ? <ActivityIndicator size="small" color={colors.primary} /> : null}
@@ -182,9 +187,9 @@ export default function ProfileScreen({ navigation }) {
       {/* Paramètres */}
       <Text style={styles.sectionTitle}>{t('prof_settings')}</Text>
       <View style={styles.menuCard}>
-        <MenuItem icon="🖨" label={t('prof_printer')} onPress={() => navigation.navigate('PrinterSettings')} />
+        <MenuItem ionicon="print-outline" label={t('prof_printer')} onPress={() => navigation.navigate('PrinterSettings')} />
         <View style={[styles.menuItem, { borderBottomWidth: 0 }]}>
-          <Text style={{ fontSize: 18 }}>🌍</Text>
+          <Ionicons name="globe-outline" size={20} color={colors.primary} style={styles.menuIcon} />
           <Text style={styles.menuLabel}>{t('prof_language')}</Text>
           <View style={styles.langRow}>
             {Object.entries(LOCALE_LABELS).map(([key, label]) => (
@@ -203,8 +208,8 @@ export default function ProfileScreen({ navigation }) {
       {/* Compte */}
       <Text style={styles.sectionTitle}>{t('prof_account')}</Text>
       <View style={styles.menuCard}>
-        <MenuItem icon="🔑" label={t('prof_change_pwd')} onPress={() => setPwdModal(true)} />
-        <MenuItem icon="🚪" label={t('prof_logout')} onPress={confirmLogout} danger />
+        <MenuItem ionicon="key-outline" label={t('prof_change_pwd')} onPress={() => setPwdModal(true)} />
+        <MenuItem ionicon="log-out-outline" label={t('prof_logout')} onPress={confirmLogout} danger />
       </View>
 
       <Text style={styles.version}>{t('version')}</Text>
@@ -277,6 +282,7 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.border,
     gap: 12,
   },
+  menuIcon: { width: 24, textAlign: 'center' },
   menuLabel: { flex: 1, fontSize: 15, fontWeight: '600', color: colors.text, marginHorizontal: 12 },
   langRow: { flexDirection: 'row', gap: 6 },
   langBtn: {
