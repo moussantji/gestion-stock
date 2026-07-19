@@ -46,7 +46,7 @@ Route::post('/admin/login', [AdminAuthController::class, 'login'])->name('login.
 Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
 
 // ================= PANNEAU ADMIN =================
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'platform.admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::resource('plans', PlanController::class)->except(['show']);

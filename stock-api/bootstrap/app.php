@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsurePlatformAdmin;
 use App\Http\Middleware\EnsureRole;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
@@ -18,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Alias utilisé par les routes : ->middleware('role:admin') / 'role:admin,manager'
         $middleware->alias([
             'role' => EnsureRole::class,
+            'platform.admin' => EnsurePlatformAdmin::class,
         ]);
 
         // Langue du visiteur (session FR/EN) appliquée à tout le site + panneau admin.
