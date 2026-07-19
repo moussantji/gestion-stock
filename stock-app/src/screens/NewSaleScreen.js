@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import api, { getErrorMessage } from '../api/client';
+import { mediaUrl } from '../config';
 import { useLocale } from '../context/LocaleContext';
 import { uuid } from '../utils/offlineQueue';
 import { listQuotes, removeQuote, saveQuote, buildQuoteText } from '../utils/quotes'; // 🧾 v21 (v2.10)
@@ -339,7 +340,7 @@ export default function NewSaleScreen({ navigation }) {
               <TouchableOpacity key={p.id} style={styles.resultRow} onPress={() => addToCart(p)}>
                 {/* 📸 v2.9 : vignette produit (placeholder 📦 si absente) */}
                 {p.image_url ? (
-                  <Image source={{ uri: p.image_url }} style={styles.resultThumb} />
+                  <Image source={{ uri: mediaUrl(p.image_url) }} style={styles.resultThumb} />
                 ) : (
                   <View style={[styles.resultThumb, styles.thumbPh]}><Text style={{ fontSize: 15 }}>📦</Text></View>
                 )}
@@ -382,7 +383,7 @@ export default function NewSaleScreen({ navigation }) {
               <View key={item.product_id} style={styles.cartRow}>
                 {/* 📸 v2.9 : vignette de la ligne panier */}
                 {item.image_url ? (
-                  <Image source={{ uri: item.image_url }} style={styles.cartThumb} />
+                  <Image source={{ uri: mediaUrl(item.image_url) }} style={styles.cartThumb} />
                 ) : (
                   <View style={[styles.cartThumb, styles.thumbPh]}><Text style={{ fontSize: 13 }}>📦</Text></View>
                 )}

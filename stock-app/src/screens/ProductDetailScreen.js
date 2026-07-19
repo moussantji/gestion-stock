@@ -15,7 +15,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import * as SecureStore from 'expo-secure-store';
 import * as Sharing from 'expo-sharing';
 import api, { getErrorMessage } from '../api/client';
-import { SERVER_URL } from '../config';
+import { SERVER_URL, mediaUrl } from '../config';
 import { useAuth } from '../context/AuthContext';
 import { useLocale } from '../context/LocaleContext';
 import { useNetwork } from '../context/NetworkContext';
@@ -146,7 +146,7 @@ export default function ProductDetailScreen({ route, navigation }) {
       ) : null}
 
       {/* Photo */}
-      {product.image_url ? <Image source={{ uri: product.image_url }} style={styles.photo} /> : null}
+      {product.image_url ? <Image source={{ uri: mediaUrl(product.image_url) }} style={styles.photo} /> : null}
 
       {/* En-tête */}
       <View style={styles.headerCard}>

@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import api, { getErrorMessage } from '../api/client';
+import { mediaUrl } from '../config';
 import { useLocale } from '../context/LocaleContext';
 import { colors } from '../theme/colors';
 import Field from '../components/Field';
@@ -170,7 +171,7 @@ export default function ProductFormScreen({ route, navigation }) {
 
   const selectedCategory = categories.find((c) => c.id === categoryId);
   const selectedSupplier = suppliers.find((s) => s.id === supplierId);
-  const photoUri = photo?.uri ?? editing?.image_url ?? null;
+  const photoUri = photo?.uri ?? (editing?.image_url ? mediaUrl(editing.image_url) : null);
 
   return (
     <KeyboardAvoidingView

@@ -19,7 +19,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import * as SecureStore from 'expo-secure-store';
 import * as Sharing from 'expo-sharing';
 import api, { getErrorMessage } from '../api/client';
-import { SERVER_URL } from '../config';
+import { SERVER_URL, mediaUrl } from '../config';
 import { useAuth } from '../context/AuthContext';
 import { useLocale } from '../context/LocaleContext';
 import { colors } from '../theme/colors';
@@ -466,7 +466,7 @@ export default function StatsScreen() {
                       </Text>
                     </View>
                     {p.image_url ? (
-                      <Image source={{ uri: p.image_url }} style={styles.thumb} />
+                      <Image source={{ uri: mediaUrl(p.image_url) }} style={styles.thumb} />
                     ) : (
                       <View style={[styles.thumb, styles.thumbPlaceholder]}>
                         <Text style={{ fontSize: 16 }}>📦</Text>

@@ -1,8 +1,10 @@
 import React from 'react';
-import { ActivityIndicator, Platform, Text, View } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Ionicons } from '@expo/vector-icons';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAuth } from '../context/AuthContext';
 import { useLocale } from '../context/LocaleContext';
@@ -41,40 +43,66 @@ import TransfersScreen from '../screens/TransfersScreen';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
+// Icônes vectorielles premium (Ionicons) : [inactif (outline), actif (filled)]
 const TAB_ICONS = {
-  Dashboard: '🏠',
-  Products: '📦',
-  Movements: '🔄',
-  Alerts: '🔔',
-  Admin: '⚡',
-  Profile: '👤',
+  Dashboard: ['grid-outline', 'grid'],
+  Products: ['cube-outline', 'cube'],
+  Movements: ['swap-horizontal', 'swap-horizontal'],
+  Alerts: ['notifications-outline', 'notifications'],
+  Admin: ['flash-outline', 'flash'],
+  Profile: ['person-outline', 'person'],
 };
+
+/**
+ * HOC : ajoute le safe-area HAUT à un écran d'onglet.
+ * (le header natif des onglets a été retiré → on protège l'encoche/status bar
+ *  en un seul endroit, sans toucher aux 6 écrans.)
+ */
+function withSafeTop(ScreenComponent) {
+  function SafeTopScreen(props) {
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['top']}>
+        <ScreenComponent {...props} />
+      </SafeAreaView>
+    );
+  }
+  SafeTopScreen.displayName = `SafeTop(${ScreenComponent.displayName || ScreenComponent.name || 'Screen'})`;
+  return SafeTopScreen;
+}
+
+const SafeDashboard = withSafeTop(DashboardScreen);
+const SafeProducts = withSafeTop(ProductsScreen);
+const SafeMovements = withSafeTop(MovementsScreen);
+const SafeAlerts = withSafeTop(AlertsScreen);
+const SafeAdmin = withSafeTop(AdminScreen);
+const SafeProfile = withSafeTop(ProfileScreen);
 
 function MainTabs() {
   const { hasRole } = useAuth();
   const { t } = useLocale();
+  const insets = useSafeAreaInsets();
+
+  // La barre flottante doit passer AU-DESSUS de la nav système (gestes/3 boutons)
+  const barBottom = (insets.bottom || 0) + 10;
 
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        headerStyle: { backgroundColor: colors.bgAlt },
-        headerTintColor: colors.text,
-        headerTitleStyle: { fontWeight: '700' },
-        headerShadowVisible: false,
+        headerShown: false, // ⛔️ plus de header natif redondant sur les onglets
         // ===== Tab bar flottante premium =====
         tabBarStyle: {
           position: 'absolute',
           backgroundColor: colors.bgAlt,
           borderTopWidth: 0,
-          borderRadius: 24,
+          borderRadius: 22,
           marginHorizontal: 14,
-          bottom: Platform.OS === 'ios' ? 20 : 12,
-          height: 66,
+          bottom: barBottom,
+          height: 64,
           paddingTop: 8,
           paddingBottom: 8,
           borderWidth: 1,
           borderColor: colors.border,
-          elevation: 10,
+          elevation: 12,
           shadowColor: '#000',
           shadowOpacity: 0.45,
           shadowRadius: 16,
@@ -84,21 +112,20 @@ function MainTabs() {
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.muted,
         tabBarLabelStyle: { fontSize: 10.5, fontWeight: '700' },
-        tabBarIcon: ({ focused }) => (
-          <Text style={{ fontSize: 20, opacity: focused ? 1 : 0.45 }}>
-            {TAB_ICONS[route.name]}
-          </Text>
-        ),
+        tabBarIcon: ({ focused, color }) => {
+          const [outline, filled] = TAB_ICONS[route.name] || ['ellipse-outline', 'ellipse'];
+          return <Ionicons name={focused ? filled : outline} size={22} color={color} />;
+        },
       })}
     >
-      <Tab.Screen name="Dashboard" component={DashboardScreen} options={{ title: t('tab_home') }} />
-      <Tab.Screen name="Products" component={ProductsScreen} options={{ title: t('tab_products') }} />
-      <Tab.Screen name="Movements" component={MovementsScreen} options={{ title: t('tab_movements') }} />
-      <Tab.Screen name="Alerts" component={AlertsScreen} options={{ title: t('tab_alerts') }} />
+      <Tab.Screen name="Dashboard" component={SafeDashboard} options={{ title: t('tab_home') }} />
+      <Tab.Screen name="Products" component={SafeProducts} options={{ title: t('tab_products') }} />
+      <Tab.Screen name="Movements" component={SafeMovements} options={{ title: t('tab_movements') }} />
+      <Tab.Screen name="Alerts" component={SafeAlerts} options={{ title: t('tab_alerts') }} />
       {hasRole('admin') ? (
-        <Tab.Screen name="Admin" component={AdminScreen} options={{ title: t('tab_admin') }} />
+        <Tab.Screen name="Admin" component={SafeAdmin} options={{ title: t('tab_admin') }} />
       ) : null}
-      <Tab.Screen name="Profile" component={ProfileScreen} options={{ title: t('tab_profile') }} />
+      <Tab.Screen name="Profile" component={SafeProfile} options={{ title: t('tab_profile') }} />
     </Tab.Navigator>
   );
 }

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { colors } from '../theme/colors';
+import { mediaUrl } from '../config';
 import { formatMoney } from '../utils/format';
 import { promoActive } from '../utils/promo'; // 🏷️ v22
 
@@ -15,7 +16,7 @@ export default function ProductCard({ product, onPress }) {
     <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.75}>
       {/* Photo ou placeholder */}
       {product.image_url ? (
-        <Image source={{ uri: product.image_url }} style={styles.thumb} />
+        <Image source={{ uri: mediaUrl(product.image_url) }} style={styles.thumb} />
       ) : (
         <View style={[styles.thumb, styles.thumbPlaceholder]}>
           <Text style={{ fontSize: 20 }}>📦</Text>

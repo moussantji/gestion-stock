@@ -36,3 +36,15 @@ function detectDevApiUrl() {
 
 export const API_URL = (__DEV__ && detectDevApiUrl()) || PROD_API_URL;
 export const SERVER_URL = API_URL.replace(/\/api\/?$/, '');
+
+/**
+ * Réécrit l'hôte d'une URL média renvoyée par l'API pour la rattacher au
+ * SERVER_URL courant. Le backend construit les URLs d'images avec asset()
+ * (basé sur APP_URL), souvent "localhost" → INJOIGNABLE depuis le téléphone.
+ * On ne garde que le chemin et on le rattache au serveur réellement joignable.
+ */
+export function mediaUrl(url) {
+  if (!url) return null;
+  const path = String(url).replace(/^https?:\/\/[^/]+/i, ''); // retire scheme://host:port
+  return `${SERVER_URL}${path.startsWith('/') ? '' : '/'}${path}`;
+}
