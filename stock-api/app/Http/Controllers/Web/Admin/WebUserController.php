@@ -26,12 +26,16 @@ class WebUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8'],
-            'role' => ['required', Rule::in(User::ROLES)],
+            'role' => ['required', Rule::in(User::ASSIGNABLE_ROLES)],
         ]);
 
-        User::create($data);
+        $user = User::create($data);
 
-        return back()->with('success', 'Utilisateur créé.');
+        $msg = $user->isClient()
+            ? "Compte client créé — il peut se connecter sur {$request->getSchemeAndHttpHost()}/compte."
+            : 'Utilisateur créé.';
+
+        return back()->with('success', $msg);
     }
 
     public function destroy(Request $request, User $user)

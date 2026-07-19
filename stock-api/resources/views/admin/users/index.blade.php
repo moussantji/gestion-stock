@@ -5,10 +5,10 @@
 @section('content')
 
 <h1 class="page-title">👥 Utilisateurs de l'app</h1>
-<p class="page-sub">Comptes du <strong>personnel</strong> (admin, gestionnaire, employé) ayant accès à la caisse.</p>
+<p class="page-sub">Personnel (admin, gestionnaire, employé) + comptes <strong>clients</strong> du portail <code>/compte</code>.</p>
 
 <div class="flash" style="background: rgba(56,189,248,0.1); color:#38bdf8; border:1px solid rgba(56,189,248,0.3);">
-    ℹ️ Les <strong>comptes clients</strong> (abonnés du portail <code>/compte</code>) ne se créent pas ici : ils sont générés automatiquement en <strong>validant une commande</strong> dans <a href="{{ route('admin.orders.index') }}" style="color:inherit; text-decoration:underline;">Commandes</a> (le mot de passe s'affiche une seule fois).
+    ℹ️ Les comptes <strong>clients</strong> sont généralement créés automatiquement en <strong>validant une commande</strong> dans <a href="{{ route('admin.orders.index') }}" style="color:inherit; text-decoration:underline;">Commandes</a>. Tu peux aussi en créer un <strong>manuellement</strong> ci-dessous (rôle « Client ») — il pourra se connecter au portail <code>/compte</code>.
 </div>
 
 {{-- Création rapide --}}
@@ -38,7 +38,9 @@
                     <option value="employee">Employé</option>
                     <option value="manager">Gestionnaire</option>
                     <option value="admin">Administrateur</option>
+                    <option value="client">Client (portail /compte)</option>
                 </select>
+                @error('role') <div class="error-msg">{{ $message }}</div> @enderror
             </div>
         </div>
         <button class="btn btn-primary">Créer le compte</button>
@@ -52,6 +54,7 @@
         <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Administrateurs</option>
         <option value="manager" {{ request('role') === 'manager' ? 'selected' : '' }}>Gestionnaires</option>
         <option value="employee" {{ request('role') === 'employee' ? 'selected' : '' }}>Employés</option>
+        <option value="client" {{ request('role') === 'client' ? 'selected' : '' }}>Clients</option>
     </select>
 </form>
 
@@ -68,7 +71,7 @@
                     <td class="muted">{{ $user->email }}</td>
                     <td>
                         <span class="badge {{ $user->role }}">
-                            {{ ['admin' => 'Admin', 'manager' => 'Gestionnaire', 'employee' => 'Employé'][$user->role] }}
+                            {{ \App\Models\User::ROLE_LABELS[$user->role] ?? $user->role }}
                         </span>
                     </td>
                     <td>{{ $user->movements_count }}</td>

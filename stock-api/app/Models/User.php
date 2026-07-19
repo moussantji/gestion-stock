@@ -18,6 +18,17 @@ class User extends Authenticatable
 
     public const ROLES = [self::ROLE_ADMIN, self::ROLE_MANAGER, self::ROLE_EMPLOYEE];
 
+    /** Rôles assignables manuellement depuis l'admin web (client = accès au portail /compte) */
+    public const ASSIGNABLE_ROLES = [self::ROLE_ADMIN, self::ROLE_MANAGER, self::ROLE_EMPLOYEE, self::ROLE_CLIENT];
+
+    /** Libellés lisibles des rôles */
+    public const ROLE_LABELS = [
+        self::ROLE_ADMIN => 'Administrateur',
+        self::ROLE_MANAGER => 'Gestionnaire',
+        self::ROLE_EMPLOYEE => 'Employé',
+        self::ROLE_CLIENT => 'Client',
+    ];
+
     protected $fillable = ['name', 'email', 'password', 'role', 'shop_id'];
 
     protected $hidden = ['password', 'remember_token'];

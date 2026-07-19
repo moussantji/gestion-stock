@@ -146,6 +146,7 @@ tr:hover td { background: rgba(148,163,184,0.04); }
 .badge.admin { background: rgba(248,113,113,0.14); color: var(--danger); }
 .badge.manager { background: rgba(251,191,36,0.14); color: var(--warning); }
 .badge.employee { background: rgba(56,189,248,0.14); color: #38bdf8; }
+.badge.client { background: rgba(124,92,252,0.16); color: #a78bfa; }
 
 .mono { font-family: ui-monospace, monospace; font-size: 12.5px; }
 .muted { color: var(--muted); }
