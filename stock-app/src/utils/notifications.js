@@ -1,6 +1,7 @@
 import * as Notifications from 'expo-notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Constants, { ExecutionEnvironment } from 'expo-constants';
+import Constants from 'expo-constants';
+import { isRunningInExpoGo } from 'expo';
 import { Platform } from 'react-native';
 import api from '../api/client';
 
@@ -103,9 +104,11 @@ export async function scheduleLicenseReminders(expiringLicenses, notifTitle, not
  */
 export async function registerPushToken() {
   try {
-    // 🚫 Expo Go (SDK 53+) : les push distantes n'y sont plus supportées.
-    // On n'appelle PAS getExpoPushTokenAsync pour éviter le warning ; il faut un dev build/APK.
-    if (Constants.executionEnvironment === ExecutionEnvironment.StoreClient) {
+    // 🚫 Expo Go (SDK 53+) : les push distantes y ont été retirées et
+    // getExpoPushTokenAsync LÈVE une erreur sur Android. On utilise le même
+    // détecteur qu'expo-notifications (isRunningInExpoGo) pour ne jamais l'appeler.
+    // Les push fonctionnent dans un development build / APK.
+    if (isRunningInExpoGo()) {
       return;
     }
 
