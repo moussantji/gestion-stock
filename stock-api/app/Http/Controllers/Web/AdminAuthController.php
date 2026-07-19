@@ -28,10 +28,12 @@ class AdminAuthController extends Controller
             return back()->withErrors(['email' => 'Identifiants incorrects.'])->onlyInput('email');
         }
 
-        if ($request->user()->role !== User::ROLE_ADMIN) {
+        // 🏢 Panneau PLATEFORME : réservé au super-admin StockFlow (sans entreprise).
+        // Un admin d'ENTREPRISE gère son stock dans l'app, pas les abonnements de tous.
+        if ($request->user()->role !== User::ROLE_ADMIN || $request->user()->company_id) {
             Auth::logout();
 
-            return back()->withErrors(['email' => 'Accès réservé aux administrateurs.'])->onlyInput('email');
+            return back()->withErrors(['email' => 'Accès réservé aux administrateurs de la plateforme.'])->onlyInput('email');
         }
 
         $request->session()->regenerate();

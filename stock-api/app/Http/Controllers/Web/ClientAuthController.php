@@ -17,8 +17,8 @@ class ClientAuthController extends Controller
 {
     public function showLogin()
     {
-        // Déjà connecté en tant que client → direct au tableau de bord
-        if (Auth::check() && Auth::user()->isClient()) {
+        // Déjà connecté en tant qu'abonné → direct au tableau de bord
+        if (Auth::check() && Auth::user()->company_id) {
             return redirect()->route('client.dashboard');
         }
 
@@ -36,11 +36,11 @@ class ClientAuthController extends Controller
             return back()->withErrors(['email' => 'Identifiants incorrects.'])->onlyInput('email');
         }
 
-        // 🚫 Un compte staff (admin/manager/employé) n'a rien à faire ici
-        if (! $request->user()->isClient()) {
+        // 🚫 Réservé aux abonnés (utilisateurs rattachés à une entreprise)
+        if (! $request->user()->company_id) {
             Auth::logout();
 
-            return back()->withErrors(['email' => 'Accès réservé aux comptes clients.'])->onlyInput('email');
+            return back()->withErrors(['email' => 'Accès réservé aux abonnés StockFlow.'])->onlyInput('email');
         }
 
         $request->session()->regenerate();
@@ -62,8 +62,8 @@ class ClientAuthController extends Controller
         }
 
         $user = User::where('email', $google['email'])->first();
-        if (! $user || ! $user->isClient()) {
-            return back()->withErrors(['email' => "Aucun compte client StockFlow pour {$google['email']} — commandez d'abord une formule."]);
+        if (! $user || ! $user->company_id) {
+            return back()->withErrors(['email' => "Aucun abonnement StockFlow pour {$google['email']} — commandez d'abord une formule."]);
         }
 
         // 🔴 Abonnement expiré (après grâce) → on indique comment renouveler

@@ -20,8 +20,8 @@ class ClientPortalController extends Controller
     {
         $user = $request->user();
 
-        // 🚪 Garde-fou : pas connecté ou pas un compte client → page de connexion
-        if (! $user || ! $user->isClient()) {
+        // 🚪 Garde-fou : pas connecté ou pas un abonné → page de connexion
+        if (! $user || ! $user->company_id) {
             return redirect()->route('client.login');
         }
 

@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
@@ -45,14 +46,24 @@ class Setting
         'cycle_count_daily' => ['min' => 0, 'max' => 50], // 📦 v2.11 : 0 = comptage tournant masqué
     ];
 
+    /** 🏢 Entreprise courante (locataire) — null = plateforme/console (réglages globaux). */
+    protected static function companyId(): ?int
+    {
+        return Auth::user()?->company_id;
+    }
+
     public static function get(string $key, mixed $default = null): mixed
     {
         $default ??= self::DEFAULTS[$key] ?? null;
+        $companyId = self::companyId();
 
         try {
             $value = Cache::rememberForever(
-                "setting:{$key}",
-                fn () => DB::table('settings')->where('key', $key)->value('value')
+                "setting:{$companyId}:{$key}",
+                fn () => DB::table('settings')
+                    ->where('company_id', $companyId)
+                    ->where('key', $key)
+                    ->value('value')
             );
         } catch (\Throwable) {
             return $default; // table absente (avant migration) → défaut
@@ -67,11 +78,13 @@ class Setting
 
     public static function set(string $key, mixed $value): void
     {
+        $companyId = self::companyId();
+
         DB::table('settings')->updateOrInsert(
-            ['key' => $key],
+            ['company_id' => $companyId, 'key' => $key],
             ['value' => (string) $value, 'updated_at' => now()]
         );
-        Cache::forget("setting:{$key}");
+        Cache::forget("setting:{$companyId}:{$key}");
     }
 
     /** 📧 v2.1 : réglage textuel (boss_email…) — chaîne nettoyée, jamais castée en int. */
