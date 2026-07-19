@@ -1,11 +1,16 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
 
-export default function EmptyState({ icon = '📭', title = 'Rien ici', subtitle }) {
+export default function EmptyState({ icon = '📭', ionicon, title = 'Rien ici', subtitle }) {
   return (
     <View style={styles.wrap}>
-      <Text style={styles.icon}>{icon}</Text>
+      {ionicon ? (
+        <Ionicons name={ionicon} size={38} color={colors.muted} style={{ marginBottom: 10 }} />
+      ) : (
+        <Text style={styles.icon}>{icon}</Text>
+      )}
       <Text style={styles.title}>{title}</Text>
       {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
     </View>

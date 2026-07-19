@@ -107,13 +107,13 @@ export default function DashboardScreen({ navigation }) {
         <>
           {/* Stats */}
           <View style={styles.grid}>
-            <StatCard icon="📦" label={t('dash_products')} value={stats.products} color={colors.primary} style={{ marginRight: 8 }} />
-            <StatCard icon="💰" label={t('dash_stock_value')} value={formatMoney(stats.stock_value)} color={colors.success} style={{ marginLeft: 8 }} />
+            <StatCard ionicon="cube" label={t('dash_products')} value={stats.products} color={colors.primary} style={{ marginRight: 8 }} />
+            <StatCard ionicon="cash" label={t('dash_stock_value')} value={formatMoney(stats.stock_value)} color={colors.success} style={{ marginLeft: 8 }} />
           </View>
           <View style={[styles.grid, { marginTop: 12 }]}>
-            <StatCard icon="⚠️" label={t('dash_low_stock')} value={stats.low_stock} color={colors.warning} style={{ marginRight: 8 }} />
-            <StatCard icon="🚫" label={t('dash_out_of_stock')} value={stats.out_of_stock} color={colors.danger} style={{ marginHorizontal: 8 }} />
-            <StatCard icon="📅" label={t('dash_moves_today')} value={stats.movements_today} color={colors.info} style={{ marginLeft: 8 }} />
+            <StatCard ionicon="warning" label={t('dash_low_stock')} value={stats.low_stock} color={colors.warning} style={{ marginRight: 8 }} />
+            <StatCard ionicon="close-circle" label={t('dash_out_of_stock')} value={stats.out_of_stock} color={colors.danger} style={{ marginHorizontal: 8 }} />
+            <StatCard ionicon="swap-horizontal" label={t('dash_moves_today')} value={stats.movements_today} color={colors.info} style={{ marginLeft: 8 }} />
           </View>
 
           {/* 📉 v18 : chip « ruptures imminentes (≤ 7 j) » → Alertes (route restock-forecast v14) */}
