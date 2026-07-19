@@ -5,7 +5,11 @@
 @section('content')
 
 <h1 class="page-title">👥 Utilisateurs de l'app</h1>
-<p class="page-sub">Comptes ayant accès à l'application mobile.</p>
+<p class="page-sub">Comptes du <strong>personnel</strong> (admin, gestionnaire, employé) ayant accès à la caisse.</p>
+
+<div class="flash" style="background: rgba(56,189,248,0.1); color:#38bdf8; border:1px solid rgba(56,189,248,0.3);">
+    ℹ️ Les <strong>comptes clients</strong> (abonnés du portail <code>/compte</code>) ne se créent pas ici : ils sont générés automatiquement en <strong>validant une commande</strong> dans <a href="{{ route('admin.orders.index') }}" style="color:inherit; text-decoration:underline;">Commandes</a> (le mot de passe s'affiche une seule fois).
+</div>
 
 {{-- Création rapide --}}
 <div class="card">
