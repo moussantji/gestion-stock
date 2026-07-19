@@ -15,6 +15,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import * as SecureStore from 'expo-secure-store';
 import * as Sharing from 'expo-sharing';
 import ViewShot, { captureRef } from 'react-native-view-shot';
+import { Ionicons } from '@expo/vector-icons';
 import api, { getErrorMessage } from '../api/client';
 import { SERVER_URL } from '../config';
 import { buildReceiptText } from '../utils/receiptText'; // 🧾 v2.8 : reçu texte WhatsApp
@@ -245,11 +246,11 @@ export default function ReceiptActionsSheet({ receipt, onClose, navigation, onCh
             <Text style={styles.title}>{t('sale_format_title')}</Text>
             <Text style={styles.number}>{receipt?.number}</Text>
 
-            <ActionButton icon="📄" label={t('sale_format_a5')} loading={busy === 'pdf'} onPress={() => sharePdf('pdf')} />
-            <ActionButton icon="🖨" label={t('sale_format_ticket')} loading={busy === 'ticket'} onPress={() => sharePdf('ticket')} />
-            <ActionButton icon="📱" label={t('rc_share_image')} loading={busy === 'img'} onPress={shareImage} />
-            <ActionButton icon="🧾" label={t('wa_share')} loading={busy === 'wa'} onPress={shareWhatsApp} />
-            <ActionButton icon="🔵" label={t('pr_print')} loading={busy === 'bt'} loadingLabel={t('pr_printing')} onPress={printBluetooth} accent />
+            <ActionButton ionicon="document-text-outline" label={t('sale_format_a5')} loading={busy === 'pdf'} onPress={() => sharePdf('pdf')} />
+            <ActionButton ionicon="print-outline" label={t('sale_format_ticket')} loading={busy === 'ticket'} onPress={() => sharePdf('ticket')} />
+            <ActionButton ionicon="phone-portrait-outline" label={t('rc_share_image')} loading={busy === 'img'} onPress={shareImage} />
+            <ActionButton ionicon="logo-whatsapp" label={t('wa_share')} loading={busy === 'wa'} onPress={shareWhatsApp} />
+            <ActionButton ionicon="bluetooth-outline" label={t('pr_print')} loading={busy === 'bt'} loadingLabel={t('pr_printing')} onPress={printBluetooth} accent />
 
             {!refunded && hasRole('admin', 'manager') ? (
               <>
@@ -266,8 +267,8 @@ export default function ReceiptActionsSheet({ receipt, onClose, navigation, onCh
                     thumbColor="#fff"
                   />
                 </View>
-                <ActionButton icon="↩️" label={t('avp_action')} loading={busy === 'partial'} onPress={openPartial} warning />
-                <ActionButton icon="⛔" label={t('av_action')} loading={busy === 'refund'} onPress={confirmRefund} danger />
+                <ActionButton ionicon="arrow-undo-outline" label={t('avp_action')} loading={busy === 'partial'} onPress={openPartial} warning />
+                <ActionButton ionicon="ban-outline" label={t('av_action')} loading={busy === 'refund'} onPress={confirmRefund} danger />
               </>
             ) : null}
             {refunded ? (
@@ -296,11 +297,11 @@ export default function ReceiptActionsSheet({ receipt, onClose, navigation, onCh
                   </View>
                   <View style={styles.stepper}>
                     <TouchableOpacity style={styles.stepBtn} onPress={() => bumpLine(l.id, -1)}>
-                      <Text style={styles.stepText}>−</Text>
+                      <Ionicons name="remove" size={18} color={colors.text} />
                     </TouchableOpacity>
                     <Text style={styles.stepQty}>{l.qty}</Text>
                     <TouchableOpacity style={styles.stepBtn} onPress={() => bumpLine(l.id, 1)}>
-                      <Text style={styles.stepText}>＋</Text>
+                      <Ionicons name="add" size={18} color={colors.text} />
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -352,7 +353,8 @@ export default function ReceiptActionsSheet({ receipt, onClose, navigation, onCh
   );
 }
 
-function ActionButton({ icon, label, onPress, loading, loadingLabel, accent, danger, warning }) {
+function ActionButton({ icon, ionicon, label, onPress, loading, loadingLabel, accent, danger, warning }) {
+  const tint = danger ? colors.danger : warning ? colors.warning : accent ? colors.accent : colors.text;
   return (
     <TouchableOpacity
       style={[
@@ -367,13 +369,15 @@ function ActionButton({ icon, label, onPress, loading, loadingLabel, accent, dan
     >
       {loading ? (
         <ActivityIndicator color={danger ? colors.danger : colors.accent} />
+      ) : ionicon ? (
+        <Ionicons name={ionicon} size={19} color={tint} style={{ width: 22, textAlign: 'center' }} />
       ) : (
         <Text style={{ fontSize: 17 }}>{icon}</Text>
       )}
       <Text style={[styles.actionText, danger && { color: colors.danger }, warning && { color: colors.warning }]}>
         {loading && loadingLabel ? loadingLabel : label}
       </Text>
-      <Text style={{ color: colors.muted, fontSize: 14 }}>›</Text>
+      <Ionicons name="chevron-forward" size={16} color={colors.muted} />
     </TouchableOpacity>
   );
 }
