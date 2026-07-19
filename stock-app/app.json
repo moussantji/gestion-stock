@@ -47,6 +47,14 @@
           "resizeMode": "contain",
           "backgroundColor": "#0B0B12"
         }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
       ]
     ]
   }
