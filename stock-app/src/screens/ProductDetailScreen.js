@@ -11,6 +11,7 @@ import {
   View,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as SecureStore from 'expo-secure-store';
 import * as Sharing from 'expo-sharing';
@@ -176,14 +177,14 @@ export default function ProductDetailScreen({ route, navigation }) {
           style={[styles.actionBtn, { backgroundColor: colors.success, marginRight: 8 }]}
           onPress={() => navigation.navigate('MovementForm', { product, type: 'in' })}
         >
-          <Text style={styles.actionIcon}>⬇️</Text>
+          <Ionicons name="arrow-down" size={20} color="#0B0F1A" />
           <Text style={styles.actionText}>{t('pd_in')}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.actionBtn, { backgroundColor: colors.danger, marginLeft: 8 }]}
           onPress={() => navigation.navigate('MovementForm', { product, type: 'out' })}
         >
-          <Text style={styles.actionIcon}>⬆️</Text>
+          <Ionicons name="arrow-up" size={20} color="#0B0F1A" />
           <Text style={styles.actionText}>{t('pd_out')}</Text>
         </TouchableOpacity>
       </View>

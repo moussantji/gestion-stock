@@ -10,6 +10,7 @@ import {
   View,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import api, { getErrorMessage } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import { useLocale } from '../context/LocaleContext';
@@ -122,15 +123,15 @@ export default function MovementsScreen({ navigation }) {
   const typeMeta = (type) => {
     switch (type) {
       case 'in':
-        return { icon: '⬇️', bg: colors.successBg, color: colors.success, sign: '+' };
+        return { ion: 'arrow-down', bg: colors.successBg, color: colors.success, sign: '+' };
       case 'out':
-        return { icon: '⬆️', bg: colors.dangerBg, color: colors.danger, sign: '-' };
+        return { ion: 'arrow-up', bg: colors.dangerBg, color: colors.danger, sign: '-' };
       case 'transfer_in':
-        return { icon: '↙️', bg: colors.infoBg, color: colors.info, sign: '+' };
+        return { ion: 'arrow-down-circle', bg: colors.infoBg, color: colors.info, sign: '+' };
       case 'transfer_out':
-        return { icon: '↗️', bg: colors.infoBg, color: colors.info, sign: '-' };
+        return { ion: 'arrow-up-circle', bg: colors.infoBg, color: colors.info, sign: '-' };
       default:
-        return { icon: '🔄', bg: colors.cardAlt, color: colors.muted, sign: '' };
+        return { ion: 'swap-horizontal', bg: colors.cardAlt, color: colors.muted, sign: '' };
     }
   };
 
@@ -143,7 +144,7 @@ export default function MovementsScreen({ navigation }) {
         onLongPress={() => confirmCancel(item)}
       >
         <View style={[styles.typeBadge, { backgroundColor: tm.bg }]}>
-          <Text style={{ fontSize: 18 }}>{tm.icon}</Text>
+          <Ionicons name={tm.ion} size={20} color={tm.color} />
         </View>
         <View style={{ flex: 1 }}>
           <Text style={styles.name} numberOfLines={1}>{item.product?.name ?? t('product_deleted')}</Text>
@@ -164,7 +165,7 @@ export default function MovementsScreen({ navigation }) {
     return (
       <TouchableOpacity style={styles.card} onPress={() => setShareReceipt(item)} activeOpacity={0.75}>
         <View style={[styles.typeBadge, { backgroundColor: remaining > 0 ? colors.warningBg : colors.primaryBg }]}>
-          <Text style={{ fontSize: 18 }}>{remaining > 0 ? '💳' : '🧾'}</Text>
+          <Ionicons name={remaining > 0 ? 'card' : 'receipt'} size={19} color={remaining > 0 ? colors.warning : colors.primary} />
         </View>
         <View style={{ flex: 1 }}>
           <Text style={styles.name} numberOfLines={1}>{item.number}</Text>
@@ -190,7 +191,7 @@ export default function MovementsScreen({ navigation }) {
   const renderCredit = ({ item }) => (
     <TouchableOpacity style={styles.card} onPress={() => setPayTarget(item)} activeOpacity={0.75}>
       <View style={[styles.typeBadge, { backgroundColor: colors.warningBg }]}>
-        <Text style={{ fontSize: 18 }}>💳</Text>
+        <Ionicons name="card" size={19} color={colors.warning} />
       </View>
       <View style={{ flex: 1 }}>
         <Text style={styles.name} numberOfLines={1}>
@@ -274,7 +275,7 @@ export default function MovementsScreen({ navigation }) {
 
       {/* Nouvelle vente */}
       <TouchableOpacity style={styles.fab} onPress={() => navigation.navigate('NewSale')}>
-        <Text style={styles.fabText}>🧾</Text>
+        <Ionicons name="cart" size={26} color="#fff" />
       </TouchableOpacity>
 
       {/* Feuille d'actions du reçu : A5 · ticket 80mm · image · impression Bluetooth */}

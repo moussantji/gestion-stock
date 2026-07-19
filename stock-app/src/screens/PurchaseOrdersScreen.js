@@ -14,6 +14,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import * as SecureStore from 'expo-secure-store';
 import * as Sharing from 'expo-sharing';
 import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import api, { getErrorMessage } from '../api/client';
 import { SERVER_URL } from '../config';
 import { useLocale } from '../context/LocaleContext';
@@ -286,7 +287,7 @@ export default function PurchaseOrdersScreen() {
           <Text style={styles.metaLight}>
             {formatDateTime(po.created_at)} · {po.user ? t('po_by', { name: po.user.name }) : t('po_auto')}
           </Text>
-          <Text style={styles.expandHint}>{expanded ? '▲' : '▼'}</Text>
+          <Ionicons name={expanded ? 'chevron-up' : 'chevron-down'} size={13} color={colors.muted} style={styles.expandHint} />
         </TouchableOpacity>
 
         {expanded && po.items ? (
@@ -303,11 +304,11 @@ export default function PurchaseOrdersScreen() {
                   {po.status === 'draft' ? (
                     <View style={styles.stepper}>
                       <TouchableOpacity style={styles.stepBtn} onPress={() => updateQty(po, it, -1)}>
-                        <Text style={styles.stepText}>−</Text>
+                        <Ionicons name="remove" size={16} color={colors.text} />
                       </TouchableOpacity>
                       <Text style={styles.stepQty}>{it.quantity}</Text>
                       <TouchableOpacity style={styles.stepBtn} onPress={() => updateQty(po, it, 1)}>
-                        <Text style={styles.stepText}>+</Text>
+                        <Ionicons name="add" size={16} color={colors.text} />
                       </TouchableOpacity>
                     </View>
                   ) : (
@@ -464,11 +465,11 @@ export default function PurchaseOrdersScreen() {
                   ) : (
                     <View style={styles.stepper}>
                       <TouchableOpacity style={styles.stepBtn} onPress={() => stepRcv(it, -1)}>
-                        <Text style={styles.stepText}>−</Text>
+                        <Ionicons name="remove" size={16} color={colors.text} />
                       </TouchableOpacity>
                       <Text style={styles.stepQty}>{rcvQty[it.id] ?? 0}</Text>
                       <TouchableOpacity style={styles.stepBtn} onPress={() => stepRcv(it, 1)}>
-                        <Text style={styles.stepText}>+</Text>
+                        <Ionicons name="add" size={16} color={colors.text} />
                       </TouchableOpacity>
                     </View>
                   )}

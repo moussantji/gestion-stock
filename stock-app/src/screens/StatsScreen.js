@@ -14,6 +14,7 @@ import {
   View,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import { BarChart } from 'react-native-chart-kit';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as SecureStore from 'expo-secure-store';
@@ -865,17 +866,17 @@ export default function StatsScreen() {
               {/* Résumé de la période */}
               <View style={styles.pmTiles}>
                 <View style={[styles.pmTile, { borderColor: colors.success }]}>
-                  <Text style={styles.pmTileIcon}>⬇️</Text>
+                  <Ionicons name="arrow-down" size={16} color={colors.success} />
                   <Text style={[styles.pmTileValue, { color: colors.success }]}>{detail.totals.in}</Text>
                   <Text style={styles.pmTileLabel}>{t('pm_entries')}</Text>
                 </View>
                 <View style={[styles.pmTile, { borderColor: colors.danger }]}>
-                  <Text style={styles.pmTileIcon}>⬆️</Text>
+                  <Ionicons name="arrow-up" size={16} color={colors.danger} />
                   <Text style={[styles.pmTileValue, { color: colors.danger }]}>{detail.totals.out}</Text>
                   <Text style={styles.pmTileLabel}>{t('pm_exits')}</Text>
                 </View>
                 <View style={[styles.pmTile, { borderColor: colors.primary }]}>
-                  <Text style={styles.pmTileIcon}>🧾</Text>
+                  <Ionicons name="receipt" size={16} color={colors.primary} />
                   <Text style={[styles.pmTileValue, { color: colors.primary }]}>{detail.totals.sold_qty}</Text>
                   <Text style={styles.pmTileLabel}>{t('pm_sold')}</Text>
                 </View>
@@ -889,7 +890,7 @@ export default function StatsScreen() {
                 {detail.movements.length ? (
                   detail.movements.map((m) => (
                     <View key={m.id} style={styles.pmMoveRow}>
-                      <Text style={{ fontSize: 15 }}>{m.type === 'in' ? '⬇️' : '⬆️'}</Text>
+                      <Ionicons name={m.type === 'in' ? 'arrow-down' : 'arrow-up'} size={16} color={m.type === 'in' ? colors.success : colors.danger} />
                       <View style={{ flex: 1, marginLeft: 9 }}>
                         <Text style={styles.pmMoveReason} numberOfLines={1}>
                           {m.reason ?? (m.type === 'in' ? t('pm_entries') : t('pm_exits'))}

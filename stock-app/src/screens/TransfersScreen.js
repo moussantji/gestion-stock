@@ -13,6 +13,7 @@ import {
   View,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import api, { getErrorMessage } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import { useLocale } from '../context/LocaleContext';
@@ -387,11 +388,11 @@ export default function TransfersScreen() {
                   <Text style={styles.itemName} numberOfLines={1}>{l.name}</Text>
                   <View style={styles.stepper}>
                     <TouchableOpacity style={styles.stepBtn} onPress={() => stepLine(l.product_id, -1)}>
-                      <Text style={styles.stepText}>−</Text>
+                      <Ionicons name="remove" size={16} color={colors.text} />
                     </TouchableOpacity>
                     <Text style={styles.stepQty}>{l.quantity}</Text>
                     <TouchableOpacity style={styles.stepBtn} onPress={() => stepLine(l.product_id, 1)}>
-                      <Text style={styles.stepText}>+</Text>
+                      <Ionicons name="add" size={16} color={colors.text} />
                     </TouchableOpacity>
                   </View>
                   <Text style={styles.itemMax}>/ {l.max}</Text>
@@ -414,7 +415,7 @@ export default function TransfersScreen() {
                           {placeName(fromShop)} : {fromShop === null ? p.quantity : (p.shop_stock ?? 0)} · {t('tr_global')} {p.quantity}
                         </Text>
                       </View>
-                      <Text style={styles.addBtn}>＋</Text>
+                      <Ionicons name="add-circle" size={22} color={colors.primary} style={{ marginLeft: 10 }} />
                     </TouchableOpacity>
                   ))}
                 </View>

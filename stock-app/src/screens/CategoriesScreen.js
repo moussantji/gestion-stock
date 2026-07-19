@@ -12,6 +12,7 @@ import {
   Platform,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import api, { getErrorMessage } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import { useLocale } from '../context/LocaleContext';
@@ -125,14 +126,14 @@ export default function CategoriesScreen() {
           ListEmptyComponent={<EmptyState ionicon="pricetags-outline" title={t('cat_none')} subtitle={t('cat_none_sub')} />}
           renderItem={({ item }) => (
             <TouchableOpacity style={styles.card} onPress={() => openEdit(item)}>
-              <View style={styles.iconWrap}><Text style={{ fontSize: 18 }}>🏷</Text></View>
+              <View style={styles.iconWrap}><Ionicons name="pricetags" size={18} color={colors.primary} /></View>
               <View style={{ flex: 1 }}>
                 <Text style={styles.name}>{item.name}</Text>
                 <Text style={styles.meta}>{item.products_count ?? 0} {t('cat_products')}</Text>
               </View>
               {hasRole('admin', 'manager') && (item.products_count ?? 0) === 0 ? (
                 <TouchableOpacity onPress={() => confirmDelete(item)} hitSlop={10}>
-                  <Text style={{ fontSize: 17 }}>🗑</Text>
+                  <Ionicons name="trash-outline" size={18} color={colors.danger} />
                 </TouchableOpacity>
               ) : null}
             </TouchableOpacity>
@@ -141,7 +142,7 @@ export default function CategoriesScreen() {
       )}
 
       <TouchableOpacity style={styles.fab} onPress={openCreate}>
-        <Text style={styles.fabText}>＋</Text>
+        <Ionicons name="add" size={30} color="#fff" />
       </TouchableOpacity>
 
       <Modal visible={modal} transparent animationType="slide" onRequestClose={() => setModal(false)}>

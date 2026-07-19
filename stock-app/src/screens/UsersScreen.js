@@ -12,6 +12,7 @@ import {
   View,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import api, { getErrorMessage } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import { useLocale } from '../context/LocaleContext';
@@ -147,7 +148,7 @@ export default function UsersScreen() {
               </View>
               {item.id !== me?.id ? (
                 <TouchableOpacity onPress={() => confirmDelete(item)} hitSlop={10} style={{ marginLeft: 10 }}>
-                  <Text style={{ fontSize: 17 }}>🗑</Text>
+                  <Ionicons name="trash-outline" size={18} color={colors.danger} />
                 </TouchableOpacity>
               ) : null}
             </View>
@@ -156,7 +157,7 @@ export default function UsersScreen() {
       )}
 
       <TouchableOpacity style={styles.fab} onPress={openCreate}>
-        <Text style={styles.fabText}>＋</Text>
+        <Ionicons name="add" size={30} color="#fff" />
       </TouchableOpacity>
 
       <Modal visible={modal} transparent animationType="slide" onRequestClose={() => setModal(false)}>
