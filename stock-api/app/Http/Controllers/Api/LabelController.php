@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
 /**
@@ -14,7 +15,7 @@ class LabelController extends Controller
 {
     public function pdf(Request $request)
     {
-        abort_unless(class_exists(\Barryvdh\DomPDF\Facade\Pdf::class), 503, 'Package barryvdh/laravel-dompdf manquant.');
+        abort_unless(class_exists(Pdf::class), 503, 'Package barryvdh/laravel-dompdf manquant.');
 
         $ids = array_filter(array_map('intval', explode(',', (string) $request->query('ids', ''))));
         abort_unless(! empty($ids), 422, 'Paramètre ids manquant (ex: ?ids=1,2,3).');
@@ -41,14 +42,14 @@ class LabelController extends Controller
                 $labels[] = [
                     'name' => mb_strimwidth($product->name, 0, 26, '…'),
                     'code' => $product->barcode ?: $product->sku,
-                    'price' => number_format((float) $product->sale_price, 0, ',', ' ') . ' FCFA',
+                    'price' => number_format((float) $product->sale_price, 0, ',', ' ').' FCFA',
                 ];
             }
         }
         abort_unless(! empty($labels), 404, 'Aucun produit trouvé pour ces ids.');
         abort_if(count($labels) > 300, 422, 'Planche trop lourde : 300 étiquettes max (affinez la sélection).'); // 📦 v2.10
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.barcode-labels', [
+        $pdf = Pdf::loadView('pdf.barcode-labels', [
             'labels' => $labels,
             'perRow' => $perRow,
             'shop' => config('shop'),

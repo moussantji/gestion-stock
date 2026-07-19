@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Models\User;
 use App\Services\LicenseService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
-use App\Models\User;
 
 class AuthController extends Controller
 {
@@ -35,7 +35,7 @@ class AuthController extends Controller
         $subscription = $user->isClient() ? LicenseService::clientSubscription($user->email) : null;
         if ($subscription && $subscription['state']['code'] === 'expired') {
             return response()->json([
-                'message' => "Votre abonnement a expiré. Renouvelez sur votre espace client : " . rtrim(config('app.url'), '/') . '/compte',
+                'message' => 'Votre abonnement a expiré. Renouvelez sur votre espace client : '.rtrim(config('app.url'), '/').'/compte',
                 'code' => 'subscription_expired',
                 'subscription' => $subscription,
             ], 403);
@@ -80,7 +80,7 @@ class AuthController extends Controller
         $subscription = LicenseService::clientSubscription($user->email);
         if ($subscription && $subscription['state']['code'] === 'expired') {
             return response()->json([
-                'message' => "Votre abonnement a expiré. Renouvelez sur votre espace client : " . rtrim(config('app.url'), '/') . '/compte',
+                'message' => 'Votre abonnement a expiré. Renouvelez sur votre espace client : '.rtrim(config('app.url'), '/').'/compte',
                 'code' => 'subscription_expired',
                 'subscription' => $subscription,
             ], 403);

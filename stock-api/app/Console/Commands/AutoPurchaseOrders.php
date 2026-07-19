@@ -15,6 +15,7 @@ use Illuminate\Console\Command;
 class AutoPurchaseOrders extends Command
 {
     protected $signature = 'stock:auto-purchase-orders';
+
     protected $description = 'Génère les bons de commande fournisseurs pour le stock bas (anti-doublon).';
 
     public function handle(): int
@@ -23,6 +24,7 @@ class AutoPurchaseOrders extends Command
 
         if (empty($created)) {
             $this->info('✅ Rien à commander (stock OK ou déjà couvert).');
+
             return self::SUCCESS;
         }
 
@@ -34,7 +36,7 @@ class AutoPurchaseOrders extends Command
         // 🔔 Push distante vers les admins
         $pushed = PushService::sendToAdmins(
             '📦 Stock bas — bons de commande',
-            count($created) . ' bon(s) généré(s) automatiquement : ' . implode(', ', $numbers),
+            count($created).' bon(s) généré(s) automatiquement : '.implode(', ', $numbers),
             ['type' => 'auto_purchase_orders', 'count' => count($created)]
         );
         $this->info("🔔 Push envoyée à {$pushed} téléphone(s) admin.");

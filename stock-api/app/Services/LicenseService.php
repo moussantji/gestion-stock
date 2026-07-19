@@ -10,7 +10,6 @@ use App\Models\Order;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
 
 /**
  * 👤 v2.14 — Abonnement = COMPTE CLIENT (plus de clé à copier-coller).
@@ -154,11 +153,12 @@ class LicenseService
         $alphabet = 'abcdefghjkmnpqrstuvwxyz23456789';
         $one = fn (int $n) => collect(range(1, $n))->map(fn () => $alphabet[random_int(0, strlen($alphabet) - 1)])->implode('');
 
-        return $one(5) . '-' . $one(5);
+        return $one(5).'-'.$one(5);
     }
 
     /**
      * 🔑↻ Régénère le mot de passe d'un compte client (perdu, partagé trop tôt…).
+     *
      * @return string|null le nouveau mot de passe en clair (1×) — null si pas de compte client
      */
     public static function resetClientPassword(License $license): ?string

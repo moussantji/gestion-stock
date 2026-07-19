@@ -118,7 +118,7 @@ class DemoDataSeeder extends Seeder
     {
         $date = now()->subDays($daysAgo)->subHours(rand(0, 8));
 
-        $m = new StockMovement();
+        $m = new StockMovement;
         $m->product_id = $product->id;
         $m->user_id = $user->id;
         $m->type = $type;

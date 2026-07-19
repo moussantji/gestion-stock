@@ -10,8 +10,10 @@ use App\Models\Shop;
 use App\Models\User;
 use App\Support\ShopInfo;
 use App\Support\ShopScope;
-use Illuminate\Validation\ValidationException;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 /**
  * 💵 Caisse : dépenses / sorties / apports manuels + solde.
@@ -131,7 +133,7 @@ class CashOperationController extends Controller
             'notes' => ['nullable', 'string', 'max:500'],
         ]);
 
-        $date = ($data['date'] ?? null) ? \Carbon\Carbon::parse($data['date'])->startOfDay() : now()->startOfDay();
+        $date = ($data['date'] ?? null) ? Carbon::parse($data['date'])->startOfDay() : now()->startOfDay();
         $shopId = ShopScope::currentShopId($request); // 🏬 un Z par boutique et par jour
 
         $duplicate = CashClosing::whereDate('closing_date', $date)
@@ -233,7 +235,7 @@ class CashOperationController extends Controller
     public function closingPdf(CashClosing $cashClosing)
     {
         abort_unless(
-            class_exists(\Barryvdh\DomPDF\Facade\Pdf::class),
+            class_exists(Pdf::class),
             503,
             'PDF indisponible : composer require barryvdh/laravel-dompdf'
         );
@@ -252,7 +254,7 @@ class CashOperationController extends Controller
             ->map(fn ($group) => (int) $group->sum('amount'))
             ->sortDesc();
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.cash-closing', [
+        $pdf = Pdf::loadView('pdf.cash-closing', [
             'closing' => $cashClosing->load('user:id,name'),
             'ops' => $ops,
             'outByCategory' => $outByCategory,
@@ -260,7 +262,7 @@ class CashOperationController extends Controller
             'logoUri' => ShopInfo::logoDataUri(),
         ])->setPaper('a5', 'portrait');
 
-        return $pdf->download('Z-caisse-' . $start->format('Y-m-d') . '.pdf');
+        return $pdf->download('Z-caisse-'.$start->format('Y-m-d').'.pdf');
     }
 
     /** DELETE /api/cash-ops/{cashOperation} — correction d'une erreur de saisie */

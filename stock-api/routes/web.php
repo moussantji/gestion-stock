@@ -10,8 +10,10 @@ use App\Http\Controllers\Web\Admin\WebUserController;
 use App\Http\Controllers\Web\AdminAuthController;
 use App\Http\Controllers\Web\ClientAuthController;
 use App\Http\Controllers\Web\ClientPortalController;
+use App\Http\Controllers\Web\GoogleAuthController;
 use App\Http\Controllers\Web\HomeController;
 use App\Http\Controllers\Web\LangController;
+use App\Http\Controllers\Web\ReceiptController;
 use Illuminate\Support\Facades\Route;
 
 // ================= SITE PUBLIC =================
@@ -19,7 +21,7 @@ Route::get('/', [HomeController::class, 'home'])->name('home');
 Route::get('/acheter/{plan:slug}', [HomeController::class, 'checkout'])->name('checkout');
 Route::post('/acheter/{plan:slug}', [HomeController::class, 'purchase'])->name('purchase');
 Route::get('/commande/{order:reference}', [HomeController::class, 'confirmation'])->name('order.confirmation');
-Route::get('/commande/{order:reference}/recu', [\App\Http\Controllers\Web\ReceiptController::class, 'orderReceipt'])->name('order.receipt');
+Route::get('/commande/{order:reference}/recu', [ReceiptController::class, 'orderReceipt'])->name('order.receipt');
 // 👤 v2.14 : la vérification de clé est morte — redirigée vers le portail client
 Route::get('/verifier-licence', [HomeController::class, 'checkForm'])->name('license.check');
 Route::post('/verifier-licence', [HomeController::class, 'checkLicense'])->name('license.check.post');
@@ -32,8 +34,8 @@ Route::post('/compte/deconnexion', [ClientAuthController::class, 'logout'])->nam
 Route::get('/compte', [ClientPortalController::class, 'dashboard'])->name('client.dashboard');
 
 // 🇬 « Se connecter avec Google » depuis les apps mobile/PC → code à usage unique
-Route::get('/auth/google/app', [\App\Http\Controllers\Web\GoogleAuthController::class, 'appPage'])->name('google.app');
-Route::post('/auth/google/app/callback', [\App\Http\Controllers\Web\GoogleAuthController::class, 'appCallback'])->name('google.app.callback');
+Route::get('/auth/google/app', [GoogleAuthController::class, 'appPage'])->name('google.app');
+Route::post('/auth/google/app/callback', [GoogleAuthController::class, 'appCallback'])->name('google.app.callback');
 
 // Changement de langue (bouton FR / EN)
 Route::get('/lang/{locale}', [LangController::class, 'switch'])->name('lang.switch');

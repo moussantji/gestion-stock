@@ -3,9 +3,11 @@
 namespace App\Console\Commands;
 
 use App\Mail\CreditReminderMail;
+use App\Models\Customer;
 use App\Models\Receipt;
 use App\Support\Setting;
 use Illuminate\Console\Command;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Mail;
 
 /**
@@ -25,6 +27,7 @@ class CreditsRemindEmail extends Command
         $to = Setting::getText('boss_email');
         if ($to === '') {
             $this->info('boss_email vide — rappel email ignoré (rien à faire).');
+
             return self::SUCCESS;
         }
 
@@ -44,6 +47,7 @@ class CreditsRemindEmail extends Command
 
         if ($oldCredits->isEmpty() && $planned === []) {
             $this->info('Aucun crédit ancien ni échéance planifiée — pas d’email.');
+
             return self::SUCCESS;
         }
 
@@ -70,8 +74,8 @@ class CreditsRemindEmail extends Command
         }
 
         $this->info("Digest crédits → {$to} : {$due} FCFA sur {$count} crédit(s) (+{$days} j)"
-            . (count($planned) ? ' + ' . count($planned) . ' rappel(s) planifié(s)' : '')
-            . " [{$mode}].");
+            .(count($planned) ? ' + '.count($planned).' rappel(s) planifié(s)' : '')
+            ." [{$mode}].");
 
         return self::SUCCESS;
     }
@@ -111,7 +115,7 @@ class CreditsRemindEmail extends Command
                 $last = $past[count($past) - 1];
                 $watch[(int) $customerId] = [
                     'date' => $last,
-                    'late_days' => (int) round(($today->getTimestamp() - \Illuminate\Support\Carbon::parse($last)->startOfDay()->getTimestamp()) / 86400),
+                    'late_days' => (int) round(($today->getTimestamp() - Carbon::parse($last)->startOfDay()->getTimestamp()) / 86400),
                 ];
             }
         }
@@ -127,7 +131,7 @@ class CreditsRemindEmail extends Command
             ->groupBy('customer_id')
             ->pluck('due', 'customer_id');
 
-        $names = \App\Models\Customer::whereIn('id', array_keys($watch))->pluck('name', 'id');
+        $names = Customer::whereIn('id', array_keys($watch))->pluck('name', 'id');
 
         $rows = [];
         foreach ($watch as $customerId => $w) {
@@ -137,7 +141,7 @@ class CreditsRemindEmail extends Command
             }
             $rows[] = [
                 'customer' => (string) ($names[$customerId] ?? "Client #{$customerId}"),
-                'date' => \Illuminate\Support\Carbon::parse($w['date'])->format('d/m/Y'),
+                'date' => Carbon::parse($w['date'])->format('d/m/Y'),
                 'late_days' => $w['late_days'],
                 'due' => $due,
             ];

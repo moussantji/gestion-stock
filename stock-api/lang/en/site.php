@@ -116,7 +116,6 @@ return [
     'verify_page' => 'your client area',
     'back_home' => '← Back to home',
 
-
     // ---------- 👤 Client portal (v2.14) ----------
     'client_login_title' => '👤 Client area',
     'client_login_sub' => 'Sign in to track your subscription and receipts.',

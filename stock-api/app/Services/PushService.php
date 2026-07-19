@@ -63,6 +63,7 @@ class PushService
         } catch (\Throwable $e) {
             // Push indisponible (réseau serveur, API Expo…) — non bloquant
             report($e);
+
             return 0;
         }
 

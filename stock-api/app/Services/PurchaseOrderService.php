@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -22,7 +23,7 @@ class PurchaseOrderService
     /**
      * Génère les bons de commande pour le stock bas.
      *
-     * @return \Illuminate\Database\Eloquent\Collection|PurchaseOrder[]
+     * @return Collection|PurchaseOrder[]
      */
     public static function generateFromLowStock(?User $creator = null): array
     {

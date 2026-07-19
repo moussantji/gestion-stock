@@ -9,9 +9,12 @@ use App\Models\LoyaltyTransaction;
 use App\Models\Product;
 use App\Models\Receipt;
 use App\Models\StockMovement;
+use App\Support\Promo;
 use App\Support\Setting;
 use App\Support\ShopScope;
 use App\Support\ShopStock;
+use App\Support\Tva;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -128,7 +131,7 @@ class ReceiptController extends Controller
                 $defaultPrice = $customer && $customer->price_tier === Customer::TIER_WHOLESALE
                     && $product->wholesale_price !== null
                     ? (int) $product->wholesale_price
-                    : (int) (\App\Support\Promo::priceFor($product) ?? $product->sale_price);
+                    : (int) (Promo::priceFor($product) ?? $product->sale_price);
                 $unitPrice = isset($item['unit_price']) ? (int) $item['unit_price'] : $defaultPrice;
                 $subtotal = $unitPrice * $item['quantity'];
 
@@ -202,7 +205,7 @@ class ReceiptController extends Controller
             return [$receipt->load(['items', 'user:id,name']), $earned];
         });
 
-        \App\Support\Promo::flagReceiptItems($receipt); // 🏷️ v2.11 : mentions PROMO (additives)
+        Promo::flagReceiptItems($receipt); // 🏷️ v2.11 : mentions PROMO (additives)
 
         return response()->json(['data' => $receipt, 'points_earned' => $earned], 201);
     }
@@ -230,7 +233,7 @@ class ReceiptController extends Controller
             'user_id' => $userId,
             'points' => $points,
             'type' => LoyaltyTransaction::TYPE_EARN,
-            'note' => 'Gain — ' . number_format($amount, 0, ',', ' ') . ' FCFA encaissés',
+            'note' => 'Gain — '.number_format($amount, 0, ',', ' ').' FCFA encaissés',
         ]);
 
         return $points;
@@ -408,7 +411,7 @@ class ReceiptController extends Controller
                     'type' => CashOperation::TYPE_OUT,
                     'category' => 'refund',
                     'amount' => $refundAmount,
-                    'reason' => 'Remboursement vente ' . $receipt->number . ($partial ? ' (partiel)' : ''),
+                    'reason' => 'Remboursement vente '.$receipt->number.($partial ? ' (partiel)' : ''),
                     'receipt_id' => $receipt->id,
                     'user_id' => $request->user()->id,
                 ]);
@@ -433,27 +436,27 @@ class ReceiptController extends Controller
     public function show(Receipt $receipt)
     {
         $receipt->load(['items.product:id,category_id', 'user:id,name', 'payments.user:id,name', 'refundedBy:id,name']);
-        \App\Support\Promo::flagReceiptItems($receipt); // 🏷️ v2.11 : drapeaux de présentation (additifs)
+        Promo::flagReceiptItems($receipt); // 🏷️ v2.11 : drapeaux de présentation (additifs)
 
         return response()->json([
             'data' => $receipt,
             // 🧮 v2.9 : ventilation TVA de présentation (additive — absente/absente=false si désactivée)
-            'tva' => \App\Support\Tva::breakdown($receipt->items),
+            'tva' => Tva::breakdown($receipt->items),
         ]);
     }
 
     /** GET /api/receipts/{receipt}/pdf — reçu PDF de la vente (A5) */
     public function pdf(Receipt $receipt)
     {
-        abort_unless(class_exists(\Barryvdh\DomPDF\Facade\Pdf::class), 503, 'Package barryvdh/laravel-dompdf manquant.');
+        abort_unless(class_exists(Pdf::class), 503, 'Package barryvdh/laravel-dompdf manquant.');
 
         $receipt->load(['items.product:id,category_id', 'user:id,name']);
-        \App\Support\Promo::flagReceiptItems($receipt); // 🏷️ v2.11 : badges PROMO du moment (additifs)
+        Promo::flagReceiptItems($receipt); // 🏷️ v2.11 : badges PROMO du moment (additifs)
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.sale-receipt', [
+        $pdf = Pdf::loadView('pdf.sale-receipt', [
             'receipt' => $receipt,
             'shop' => config('shop'),
-            'tva' => \App\Support\Tva::breakdown($receipt->items), // 🧮 v2.9 : lignes « dont TVA » (vide = désactivée)
+            'tva' => Tva::breakdown($receipt->items), // 🧮 v2.9 : lignes « dont TVA » (vide = désactivée)
         ])->setPaper('a5', 'portrait');
 
         return $pdf->stream("recu-{$receipt->number}.pdf");
@@ -462,16 +465,16 @@ class ReceiptController extends Controller
     /** GET /api/receipts/{receipt}/ticket — 🖨 version ticket 80mm (imprimante thermique) */
     public function ticket(Receipt $receipt)
     {
-        abort_unless(class_exists(\Barryvdh\DomPDF\Facade\Pdf::class), 503, 'Package barryvdh/laravel-dompdf manquant.');
+        abort_unless(class_exists(Pdf::class), 503, 'Package barryvdh/laravel-dompdf manquant.');
 
         // Papier personnalisé : 80 mm × 297 mm (226.77 × 841.89 pt) — découpe après impression
         $receipt->load(['items.product:id,category_id', 'user:id,name']);
-        \App\Support\Promo::flagReceiptItems($receipt); // 🏷️ v2.11
+        Promo::flagReceiptItems($receipt); // 🏷️ v2.11
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.sale-ticket', [
+        $pdf = Pdf::loadView('pdf.sale-ticket', [
             'receipt' => $receipt,
             'shop' => config('shop'),
-            'tva' => \App\Support\Tva::breakdown($receipt->items), // 🧮 v2.9
+            'tva' => Tva::breakdown($receipt->items), // 🧮 v2.9
         ])->setPaper([0, 0, 226.77, 841.89], 'portrait');
 
         return $pdf->stream("ticket-{$receipt->number}.pdf");

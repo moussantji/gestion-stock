@@ -10,8 +10,10 @@ use App\Models\Product;
 use App\Models\Receipt;
 use App\Models\StockMovement;
 use App\Models\Supplier;
+use App\Support\Promo;
 use App\Support\ShopStock;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -71,10 +73,10 @@ class ProductController extends Controller
      * 🏷️ v2.11 : clés promo ADDITIVES — promo_price / promo_until (null hors promo
      * active → vieux clients intacts, 1 lecture de réglage pour toute la page).
      */
-    private function appendPromo(\Illuminate\Support\Collection $products): \Illuminate\Support\Collection
+    private function appendPromo(Collection $products): Collection
     {
         return $products->map(function (Product $p) {
-            $active = \App\Support\Promo::activeFor((int) $p->id);
+            $active = Promo::activeFor((int) $p->id);
             $p->promo_price = $active ? (int) $active['price'] : null;
             $p->promo_until = $active ? $active['to'] : null;
 
@@ -82,7 +84,7 @@ class ProductController extends Controller
         });
     }
 
-    private function appendShopStock(\Illuminate\Support\Collection $products, Request $request): \Illuminate\Support\Collection
+    private function appendShopStock(Collection $products, Request $request): Collection
     {
         $ids = $products->pluck('id');
         if ($ids->isEmpty()) {
@@ -362,6 +364,7 @@ class ProductController extends Controller
             ]);
             if ($v->fails()) {
                 $errors[] = ['line' => $line, 'sku' => $skuForError !== '' ? $skuForError : null, 'message' => $v->errors()->first()];
+
                 continue;
             }
 
@@ -381,6 +384,7 @@ class ProductController extends Controller
                     $categories->put($ck, $cat); // les lignes suivantes le retrouvent
                 } else {
                     $errors[] = ['line' => $line, 'sku' => $skuForError, 'message' => "Catégorie inconnue : {$catName}"];
+
                     continue;
                 }
             }
@@ -394,6 +398,7 @@ class ProductController extends Controller
                     $suppliers->put($sk, $sup);
                 } else {
                     $errors[] = ['line' => $line, 'sku' => $skuForError, 'message' => "Fournisseur inconnu : {$supName}"];
+
                     continue;
                 }
             }
@@ -407,11 +412,21 @@ class ProductController extends Controller
                         'purchase_price' => $row['purchase_price'],
                         'sale_price' => $row['sale_price'],
                     ];
-                    if (array_key_exists('wholesale_price', $row)) $data['wholesale_price'] = $row['wholesale_price'];
-                    if (array_key_exists('alert_threshold', $row) && $row['alert_threshold'] !== null) $data['alert_threshold'] = $row['alert_threshold'];
-                    if (trim((string) ($row['barcode'] ?? '')) !== '') $data['barcode'] = trim((string) $row['barcode']);
-                    if ($catName !== '') $data['category_id'] = $categoryId;
-                    if ($supName !== '') $data['supplier_id'] = $supplierId;
+                    if (array_key_exists('wholesale_price', $row)) {
+                        $data['wholesale_price'] = $row['wholesale_price'];
+                    }
+                    if (array_key_exists('alert_threshold', $row) && $row['alert_threshold'] !== null) {
+                        $data['alert_threshold'] = $row['alert_threshold'];
+                    }
+                    if (trim((string) ($row['barcode'] ?? '')) !== '') {
+                        $data['barcode'] = trim((string) $row['barcode']);
+                    }
+                    if ($catName !== '') {
+                        $data['category_id'] = $categoryId;
+                    }
+                    if ($supName !== '') {
+                        $data['supplier_id'] = $supplierId;
+                    }
                     DB::transaction(fn () => $product->update($data));
                     $updated++;
                 } else {

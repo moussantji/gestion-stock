@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\ShopStock;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -14,8 +15,11 @@ use Illuminate\Validation\ValidationException;
 class RecurringSale extends Model
 {
     public const FREQ_WEEKLY = 'weekly';
+
     public const FREQ_MONTHLY = 'monthly';
+
     public const STATUS_ACTIVE = 'active';
+
     public const STATUS_PAUSED = 'paused';
 
     protected $fillable = [
@@ -81,11 +85,12 @@ class RecurringSale extends Model
      */
     public function generate(?int $userId = null): Receipt
     {
-        $uuid = 'rec-' . $this->id . '-' . ($this->next_run_at ?? now())->format('Ymd');
+        $uuid = 'rec-'.$this->id.'-'.($this->next_run_at ?? now())->format('Ymd');
 
         $existing = Receipt::where('client_uuid', $uuid)->first();
         if ($existing) {
             $this->advance();
+
             return $existing; // déjà générée pour cette échéance
         }
 
@@ -113,7 +118,7 @@ class RecurringSale extends Model
 
                 // 🏬📦 v13 : vérifie le stock DE L'EMPLACEMENT de l'abonnement
                 try {
-                    \App\Support\ShopStock::assertAvailable($product, $this->shop_id, $line->quantity);
+                    ShopStock::assertAvailable($product, $this->shop_id, $line->quantity);
                 } catch (ValidationException $e) {
                     throw ValidationException::withMessages([
                         'items' => ["Stock insuffisant pour « {$product->name} » — abonnement #{$this->id}."],
@@ -132,7 +137,7 @@ class RecurringSale extends Model
                     'reference' => $receipt->number,
                     'shop_id' => $this->shop_id, // 🏬 (tagué aussi en v13)
                 ]);
-                \App\Support\ShopStock::addDelta($product, $this->shop_id, -$line->quantity);
+                ShopStock::addDelta($product, $this->shop_id, -$line->quantity);
 
                 $receipt->items()->create([
                     'product_id' => $product->id,

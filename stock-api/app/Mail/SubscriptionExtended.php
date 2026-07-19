@@ -25,7 +25,7 @@ class SubscriptionExtended extends Mailable implements ShouldQueue
     {
         return new Envelope(
             subject: '🔁 Votre abonnement StockFlow est prolongé jusqu\'au '
-                . $this->license->expires_at->format('d/m/Y'),
+                .$this->license->expires_at->format('d/m/Y'),
         );
     }
 

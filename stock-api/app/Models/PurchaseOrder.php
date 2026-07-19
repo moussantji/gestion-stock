@@ -8,9 +8,13 @@ use Illuminate\Support\Str;
 class PurchaseOrder extends Model
 {
     public const STATUS_DRAFT = 'draft';
+
     public const STATUS_SENT = 'sent';
+
     public const STATUS_PARTIAL = 'partial'; // 🧾 réceptionnée en partie
+
     public const STATUS_RECEIVED = 'received';
+
     public const STATUS_CANCELLED = 'cancelled';
 
     /** Statuts « ouverts » : réception possible (dont partielle) */
@@ -61,7 +65,7 @@ class PurchaseOrder extends Model
     public static function generateNumber(): string
     {
         do {
-            $number = 'BC-' . now()->format('Y') . '-' . strtoupper(Str::random(6));
+            $number = 'BC-'.now()->format('Y').'-'.strtoupper(Str::random(6));
         } while (static::where('number', $number)->exists());
 
         return $number;

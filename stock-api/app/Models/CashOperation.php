@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class CashOperation extends Model
 {
     public const TYPE_IN = 'in';
+
     public const TYPE_OUT = 'out';
 
     // ⚠️ category + receipt_id : fillable obligatoire (sinon ignorés au create())

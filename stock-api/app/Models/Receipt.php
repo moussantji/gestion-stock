@@ -11,6 +11,7 @@ class Receipt extends Model
     use HasFactory;
 
     public const STATUS_COMPLETED = 'completed';
+
     public const STATUS_REFUNDED = 'refunded';
 
     protected $fillable = [
@@ -92,7 +93,7 @@ class Receipt extends Model
     public static function generateNumber(): string
     {
         do {
-            $number = 'R-' . now()->format('Y') . '-' . strtoupper(Str::random(6));
+            $number = 'R-'.now()->format('Y').'-'.strtoupper(Str::random(6));
         } while (static::where('number', $number)->exists());
 
         return $number;
@@ -100,6 +101,6 @@ class Receipt extends Model
 
     public function getFormattedTotalAttribute(): string
     {
-        return number_format($this->total, 0, ',', ' ') . ' FCFA';
+        return number_format($this->total, 0, ',', ' ').' FCFA';
     }
 }

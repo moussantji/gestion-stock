@@ -6,6 +6,7 @@ use App\Models\PushToken;
 use App\Models\Receipt;
 use App\Models\User;
 use App\Services\PushService;
+use App\Support\Setting;
 use Illuminate\Console\Command;
 
 /** 📅 Rappel push : crédits clients non soldés depuis plus de N jours (seuil configurable). */
@@ -18,7 +19,7 @@ class SendCreditReminders extends Command
     public function handle(): int
     {
         // 🎯 Seuil : option CLI prioritaire, sinon réglage boutique (défaut 7)
-        $days = (int) ($this->option('days') ?: \App\Support\Setting::get('credit_reminder_days', 7));
+        $days = (int) ($this->option('days') ?: Setting::get('credit_reminder_days', 7));
         $limit = now()->subDays($days);
 
         $oldCredits = Receipt::with(['customer:id,name'])
@@ -30,6 +31,7 @@ class SendCreditReminders extends Command
 
         if ($oldCredits->isEmpty()) {
             $this->info('Aucun crédit ancien — pas de rappel.');
+
             return self::SUCCESS;
         }
 
@@ -40,8 +42,8 @@ class SendCreditReminders extends Command
             ->implode(', ');
 
         $title = "💳 {$count} crédit(s) de +{$days} jours";
-        $body = 'Encours ancien : ' . number_format($due, 0, ',', ' ') . " FCFA — à relancer : {$names}"
-            . ($count > 3 ? '…' : '');
+        $body = 'Encours ancien : '.number_format($due, 0, ',', ' ')." FCFA — à relancer : {$names}"
+            .($count > 3 ? '…' : '');
 
         $tokens = PushToken::whereIn(
             'user_id',

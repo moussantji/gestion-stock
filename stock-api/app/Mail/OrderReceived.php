@@ -4,6 +4,7 @@ namespace App\Mail;
 
 use App\Models\Order;
 use App\Models\PaymentMethod;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
@@ -31,9 +32,9 @@ class OrderReceived extends Mailable
             ]);
 
         // Reçu PDF en pièce jointe (si dompdf installé)
-        if (class_exists(\Barryvdh\DomPDF\Facade\Pdf::class)) {
+        if (class_exists(Pdf::class)) {
             try {
-                $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.order-receipt', [
+                $pdf = Pdf::loadView('pdf.order-receipt', [
                     'order' => $this->order->load(['plan', 'license']),
                     'shop' => config('shop'),
                 ])->setPaper('a4');

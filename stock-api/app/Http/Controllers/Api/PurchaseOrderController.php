@@ -10,6 +10,7 @@ use App\Models\StockMovement;
 use App\Services\PurchaseOrderService;
 use App\Support\ShopScope;
 use App\Support\ShopStock;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -41,14 +42,14 @@ class PurchaseOrderController extends Controller
         $created = PurchaseOrderService::generateFromLowStock($request->user());
 
         // 🏬 Bons générés → rattachés à la boutique de l'utilisateur (null = global)
-        $shopId = \App\Support\ShopScope::currentShopId($request);
+        $shopId = ShopScope::currentShopId($request);
         if ($shopId && count($created)) {
             PurchaseOrder::whereIn('id', collect($created)->pluck('id'))->update(['shop_id' => $shopId]);
         }
 
         return response()->json([
             'message' => count($created)
-                ? count($created) . ' bon(s) de commande créé(s) — vérifie et envoie-les au fournisseur.'
+                ? count($created).' bon(s) de commande créé(s) — vérifie et envoie-les au fournisseur.'
                 : 'Aucun nouveau bon à générer (stock OK ou déjà couvert par un bon ouvert).',
             'created' => count($created),
             'data' => $created,
@@ -236,9 +237,9 @@ class PurchaseOrderController extends Controller
     /** GET /api/purchase-orders/{purchaseOrder}/pdf — PDF du bon de commande */
     public function pdf(PurchaseOrder $purchaseOrder)
     {
-        abort_unless(class_exists(\Barryvdh\DomPDF\Facade\Pdf::class), 503, 'Package barryvdh/laravel-dompdf manquant.');
+        abort_unless(class_exists(Pdf::class), 503, 'Package barryvdh/laravel-dompdf manquant.');
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.purchase-order', [
+        $pdf = Pdf::loadView('pdf.purchase-order', [
             'order' => $purchaseOrder->load(['items', 'supplier', 'user:id,name']),
             'shop' => config('shop'),
         ])->setPaper('a4');

@@ -24,8 +24,8 @@ class WeeklyRecapMail extends Mailable implements ShouldQueue
     use SerializesModels;
 
     /**
-     * @param  array  $recap   Agrégats {receipts:{count,total,paid,points_discount,refunds,refunds_total}, cash:{in,out,ops}, closings:{count,sales,end_balance,days}}
-     * @param  ?array $bestDay Meilleure journée {date, sales_collected, cashier} ou null
+     * @param  array  $recap  Agrégats {receipts:{count,total,paid,points_discount,refunds,refunds_total}, cash:{in,out,ops}, closings:{count,sales,end_balance,days}}
+     * @param  ?array  $bestDay  Meilleure journée {date, sales_collected, cashier} ou null
      */
     public function __construct(
         public string $from,
@@ -50,7 +50,7 @@ class WeeklyRecapMail extends Mailable implements ShouldQueue
         return new Content(view: 'emails.weekly_recap');
     }
 
-    /** @return array<int, \Illuminate\Mail\Mailables\Attachment> */
+    /** @return array<int, Attachment> */
     public function attachments(): array
     {
         return [

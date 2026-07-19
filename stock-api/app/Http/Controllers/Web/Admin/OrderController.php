@@ -45,8 +45,8 @@ class OrderController extends Controller
         $license = $result['license'];
 
         $message = $result['extended']
-            ? "Paiement validé ✅ Abonnement prolongé jusqu'au " . $license->expires_at->format('d/m/Y') . " (compte {$license->buyer_email})."
-            : "Paiement validé ✅ Abonnement actif jusqu'au " . $license->expires_at->format('d/m/Y') . " — identifiants envoyés à {$license->buyer_email}.";
+            ? "Paiement validé ✅ Abonnement prolongé jusqu'au ".$license->expires_at->format('d/m/Y')." (compte {$license->buyer_email})."
+            : "Paiement validé ✅ Abonnement actif jusqu'au ".$license->expires_at->format('d/m/Y')." — identifiants envoyés à {$license->buyer_email}.";
 
         if ($result['note'] === 'email_conflict') {
             $message .= ' ⚠️ Cet email appartient déjà à un compte staff : aucun compte client créé.';

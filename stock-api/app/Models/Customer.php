@@ -10,6 +10,7 @@ class Customer extends Model
     protected $fillable = ['name', 'phone', 'email', 'address', 'notes', 'shop_id', 'price_tier', 'loyalty_points'];
 
     public const TIER_RETAIL = 'retail';      // 👥 client détail (prix normal)
+
     public const TIER_WHOLESALE = 'wholesale'; // 👥 client de gros (prix préférentiel)
 
     public function shop()

@@ -23,7 +23,7 @@ class LicenseExpiring extends Mailable
             ->with([
                 'license' => $this->license,
                 'daysLeft' => $this->daysLeft,
-                'renewUrl' => route('home') . '#tarifs',
+                'renewUrl' => route('home').'#tarifs',
             ]);
 
         return $mail;

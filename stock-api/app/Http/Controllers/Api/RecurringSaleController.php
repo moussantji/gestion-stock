@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Customer;
 use App\Models\Product;
 use App\Models\RecurringSale;
+use App\Support\ShopScope;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -52,11 +53,11 @@ class RecurringSaleController extends Controller
         $sale = RecurringSale::create([
             'customer_id' => $data['customer_id'],
             'user_id' => $request->user()->id,
-            'shop_id' => \App\Support\ShopScope::currentShopId($request), // 🏬
+            'shop_id' => ShopScope::currentShopId($request), // 🏬
             'label' => $data['label'] ?? null,
             'frequency' => $data['frequency'],
             'next_run_at' => ! empty($data['next_run_at'])
-                ? \Carbon\Carbon::parse($data['next_run_at'])->startOfDay()
+                ? Carbon::parse($data['next_run_at'])->startOfDay()
                 : now(),
             'status' => RecurringSale::STATUS_ACTIVE,
             'notes' => $data['notes'] ?? null,
@@ -90,7 +91,7 @@ class RecurringSaleController extends Controller
         ]);
 
         if (! empty($data['next_run_at'])) {
-            $data['next_run_at'] = \Carbon\Carbon::parse($data['next_run_at'])->startOfDay();
+            $data['next_run_at'] = Carbon::parse($data['next_run_at'])->startOfDay();
         }
 
         $recurringSale->update(collect($data)->filter(fn ($v) => ! is_null($v))->all());

@@ -41,8 +41,8 @@ class SettingController extends Controller
         foreach (Setting::DEFAULTS as $key => $default) {
             $rules[$key] = [
                 'nullable', 'integer',
-                'min:' . Setting::LIMITS[$key]['min'],
-                'max:' . Setting::LIMITS[$key]['max'],
+                'min:'.Setting::LIMITS[$key]['min'],
+                'max:'.Setting::LIMITS[$key]['max'],
             ];
         }
 
@@ -75,6 +75,7 @@ class SettingController extends Controller
         foreach ($data as $key => $value) {
             if (array_key_exists($key, Setting::TEXTS)) {
                 Setting::set($key, trim((string) ($value ?? '')));
+
                 continue;
             }
             if ($value !== null) {

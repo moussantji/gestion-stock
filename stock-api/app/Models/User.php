@@ -12,8 +12,11 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     public const ROLE_ADMIN = 'admin';
+
     public const ROLE_MANAGER = 'manager';
+
     public const ROLE_EMPLOYEE = 'employee';
+
     public const ROLE_CLIENT = 'client'; // 👤 v2.14 : compte client du portail (créé/mis à jour par LicenseService — JAMAIS dans les écrans staff)
 
     public const ROLES = [self::ROLE_ADMIN, self::ROLE_MANAGER, self::ROLE_EMPLOYEE];

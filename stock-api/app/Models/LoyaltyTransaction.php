@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class LoyaltyTransaction extends Model
 {
     public const TYPE_EARN = 'earn';
+
     public const TYPE_REDEEM = 'redeem';
+
     public const TYPE_ADJUST = 'adjust';
 
     protected $fillable = ['customer_id', 'receipt_id', 'user_id', 'points', 'type', 'note'];

@@ -23,6 +23,7 @@ class SendLowStockDigest extends Command
 
         if ($low === 0) {
             $this->info('Aucun produit en stock bas — pas de digest.');
+
             return self::SUCCESS;
         }
 
@@ -34,8 +35,8 @@ class SendLowStockDigest extends Command
 
         $title = "📦 Stock bas : {$low} produit(s)";
         $body = ($out > 0 ? "Dont {$out} en rupture. " : '')
-            . 'À réapprovisionner : ' . implode(', ', $names)
-            . ($low > 3 ? '…' : '');
+            .'À réapprovisionner : '.implode(', ', $names)
+            .($low > 3 ? '…' : '');
 
         // Admins + managers (les gens qui décident du réassort)
         $tokens = PushToken::whereIn(

@@ -73,7 +73,7 @@ class TransfersController extends Controller
         $fromName = ShopStock::placeName($from);
         $toName = ShopStock::placeName($to);
 
-        $transfer = DB::transaction(function () use ($data, $from, $to, $lines, $fromName, $toName, $request) {
+        $transfer = DB::transaction(function () use ($data, $from, $to, $lines, $toName, $request) {
             $transfer = StockTransfer::create([
                 'reference' => StockTransfer::generateReference(),
                 'from_shop_id' => $from,
@@ -134,7 +134,7 @@ class TransfersController extends Controller
         $fromName = $stockTransfer->from_name;
         $toName = $stockTransfer->to_name;
 
-        DB::transaction(function () use ($stockTransfer, $request, $fromName, $toName) {
+        DB::transaction(function () use ($stockTransfer, $request, $fromName) {
             $stockTransfer = StockTransfer::whereKey($stockTransfer->id)->lockForUpdate()->firstOrFail();
             if (! $stockTransfer->isPending()) {
                 throw ValidationException::withMessages(['transfer' => ['Déjà traité.']]);

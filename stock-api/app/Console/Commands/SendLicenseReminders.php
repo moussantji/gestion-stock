@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Mail;
 class SendLicenseReminders extends Command
 {
     protected $signature = 'licenses:remind';
+
     protected $description = 'Envoie les rappels d\'expiration de licence (J-7, J-3, J-1).';
 
     public function handle(): int
@@ -46,11 +47,11 @@ class SendLicenseReminders extends Command
         if ($sent > 0) {
             $parts = [];
             foreach ($summary as $days => $licenses) {
-                $parts[] = count($licenses) . ' à J-' . $days;
+                $parts[] = count($licenses).' à J-'.$days;
             }
             $pushed = PushService::sendToAdmins(
                 '⌛ Licences bientôt expirées',
-                $sent . ' client(s) à recontacter : ' . implode(' · ', $parts) . '. Pensez au renouvellement !',
+                $sent.' client(s) à recontacter : '.implode(' · ', $parts).'. Pensez au renouvellement !',
                 ['type' => 'licenses_reminder', 'sent' => $sent]
             );
             $this->info("🔔 Push envoyée à {$pushed} téléphone(s) admin.");

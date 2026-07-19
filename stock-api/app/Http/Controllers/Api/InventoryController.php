@@ -7,6 +7,7 @@ use App\Models\Inventory;
 use App\Models\InventoryItem;
 use App\Models\Product;
 use App\Models\StockMovement;
+use App\Support\ShopScope;
 use App\Support\ShopStock;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -62,7 +63,7 @@ class InventoryController extends Controller
                 'name' => $data['name'] ?? null,
                 'status' => Inventory::STATUS_IN_PROGRESS,
                 'user_id' => $request->user()->id,
-                'shop_id' => \App\Support\ShopScope::currentShopId($request), // 🏬
+                'shop_id' => ShopScope::currentShopId($request), // 🏬
             ]);
 
             // Snapshot de tous les produits (chunk = catalogue volumineux OK)
@@ -72,19 +73,19 @@ class InventoryController extends Controller
             Product::select('id', 'quantity')
                 ->when($onlyIds->isNotEmpty(), fn ($q) => $q->whereIn('id', $onlyIds->all()))
                 ->chunkById(200, function ($products) use ($inventory) {
-                $rows = [];
-                foreach ($products as $product) {
-                    $rows[] = [
-                        'inventory_id' => $inventory->id,
-                        'product_id' => $product->id,
-                        'expected_quantity' => ShopStock::level($product, $inventory->shop_id),
-                        'counted_quantity' => null,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ];
-                }
-                InventoryItem::insert($rows);
-            });
+                    $rows = [];
+                    foreach ($products as $product) {
+                        $rows[] = [
+                            'inventory_id' => $inventory->id,
+                            'product_id' => $product->id,
+                            'expected_quantity' => ShopStock::level($product, $inventory->shop_id),
+                            'counted_quantity' => null,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ];
+                    }
+                    InventoryItem::insert($rows);
+                });
 
             return $inventory;
         });

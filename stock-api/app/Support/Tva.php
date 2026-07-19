@@ -22,6 +22,7 @@ class Tva
 {
     /**
      * Config brute, toujours saine.
+     *
      * @return array{enabled: bool, default_rate: float, categories: array, products: array}
      */
     public static function config(): array
@@ -48,7 +49,8 @@ class Tva
 
     /**
      * Résolution du taux (%) pour une ligne : produit → catégorie → défaut.
-     * @param array $cfg voir config()
+     *
+     * @param  array  $cfg  voir config()
      */
     public static function rateFor(array $cfg, ?int $productId, ?int $categoryId): float
     {
@@ -64,7 +66,8 @@ class Tva
 
     /**
      * Ventilation d'un ensemble de lignes vendues (prix TTC).
-     * @param iterable $items objets ->product_id, ->product?->category_id, ->subtotal (net de la ligne)
+     *
+     * @param  iterable  $items  objets ->product_id, ->product?->category_id, ->subtotal (net de la ligne)
      * @return array{enabled: bool, total_tva: int, total_ht: int, by_rate: array<int, array{rate: float, amount: int}>}
      */
     public static function breakdown(iterable $items): array

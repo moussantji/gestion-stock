@@ -28,6 +28,7 @@ class ProcessRecurringSales extends Command
 
         if ($due->isEmpty()) {
             $this->info('Aucun abonnement à exécuter.');
+
             return self::SUCCESS;
         }
 
@@ -50,9 +51,9 @@ class ProcessRecurringSales extends Command
 
         if ($ok > 0 || $failed !== []) {
             $title = "🔁 Abonnements : {$ok} vente(s) générée(s)";
-            $body = 'Total passé à crédit : ' . number_format($total, 0, ',', ' ') . ' FCFA';
+            $body = 'Total passé à crédit : '.number_format($total, 0, ',', ' ').' FCFA';
             if ($failed !== []) {
-                $body .= ' · ⚠️ Échecs (stock ?) : ' . implode(', ', array_slice($failed, 0, 3));
+                $body .= ' · ⚠️ Échecs (stock ?) : '.implode(', ', array_slice($failed, 0, 3));
             }
 
             $tokens = PushToken::whereIn(
@@ -61,7 +62,7 @@ class ProcessRecurringSales extends Command
             )->pluck('token')->all();
 
             $sent = PushService::send($tokens, $title, $body, ['type' => 'recurring_sales']);
-            $this->info("{$ok} vente(s) générée(s), " . count($failed) . " échec(s), push → {$sent} appareil(s).");
+            $this->info("{$ok} vente(s) générée(s), ".count($failed)." échec(s), push → {$sent} appareil(s).");
         }
 
         return self::SUCCESS;

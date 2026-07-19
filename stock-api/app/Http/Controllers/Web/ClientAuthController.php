@@ -69,7 +69,7 @@ class ClientAuthController extends Controller
         // 🔴 Abonnement expiré (après grâce) → on indique comment renouveler
         $subscription = LicenseService::clientSubscription($user->email);
         if ($subscription && $subscription['state']['code'] === 'expired') {
-            return back()->withErrors(['email' => "Votre abonnement a expiré. Renouvelez ci-dessous avec la même adresse email pour réactiver votre compte."]);
+            return back()->withErrors(['email' => 'Votre abonnement a expiré. Renouvelez ci-dessous avec la même adresse email pour réactiver votre compte.']);
         }
 
         Auth::login($user, remember: true);
