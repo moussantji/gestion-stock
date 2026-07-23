@@ -1,0 +1,6 @@
+@extends('layouts.admin')
+@section('title','Bons de commande')
+@section('content')
+<div class="page-heading"><div><div class="eyebrow">APPROVISIONNEMENT</div><h1 class="page-title">Bons de commande</h1><p class="page-sub">Préparez vos réassorts fournisseurs.</p></div><a class="btn btn-primary" href="{{ route('admin.purchase-orders.create') }}">+ Nouveau bon</a></div>
+<div class="card"><div class="card-title">{{ $orders->total() }} bon(s)</div><div class="table-wrap"><table><thead><tr><th>Numéro</th><th>Fournisseur</th><th>Articles</th><th>Total estimé</th><th>Statut</th><th>Date</th></tr></thead><tbody>@forelse($orders as $order)<tr><td class="mono"><a href="{{ route('admin.purchase-orders.show', $order) }}">{{ $order->number }}</a></td><td>{{ $order->supplier?->name }}</td><td>{{ $order->items_count }}</td><td class="amount-cell">{{ number_format($order->total_estimated,0,',',' ') }} F</td><td><span class="badge {{ $order->status === 'received' ? 'active' : 'pending' }}">{{ ucfirst($order->status) }}</span></td><td class="muted">{{ $order->created_at->format('d/m/Y H:i') }}</td></tr>@empty<tr><td colspan="6" class="table-empty">Aucun bon de commande.</td></tr>@endforelse</tbody></table></div>{{ $orders->links() }}</div>
+@endsection

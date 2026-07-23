@@ -1,0 +1,7 @@
+@extends('layouts.admin')
+@section('title','Nouveau bon de commande')
+@section('content')
+<div class="page-heading"><div><div class="eyebrow">APPROVISIONNEMENT</div><h1 class="page-title">Nouveau bon de commande</h1><p class="page-sub">Créez une demande de réassort.</p></div><a class="btn btn-ghost" href="{{ route('admin.purchase-orders.index') }}">← Bons de commande</a></div>
+@if($errors->any())<div class="flash error">{{ $errors->first() }}</div>@endif
+<div class="card"><form method="POST" action="{{ route('admin.purchase-orders.store') }}">@csrf<div class="form-grid"><div class="field"><label>Fournisseur *</label><select class="input" name="supplier_id" required><option value="">Sélectionner</option>@foreach($suppliers as $supplier)<option value="{{ $supplier->id }}">{{ $supplier->name }}</option>@endforeach</select></div><div class="field"><label>Produit *</label><select class="input" name="product_id" required>@foreach($products as $product)<option value="{{ $product->id }}">{{ $product->name }} · stock {{ $product->quantity }}</option>@endforeach</select></div><div class="field"><label>Quantité *</label><input class="input" type="number" min="1" name="quantity" value="1" required></div><div class="field"><label>Prix unitaire estimé *</label><input class="input" type="number" min="0" name="unit_price" value="0" required></div></div><div class="field"><label>Notes</label><textarea class="input" name="notes" rows="3"></textarea></div><button class="btn btn-primary">Créer le bon</button></form></div>
+@endsection

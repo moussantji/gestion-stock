@@ -1,0 +1,6 @@
+@extends('layouts.admin')
+@section('title', 'Inventaires — ' . config('shop.name', 'StockFlow'))
+@section('content')
+<div class="page-heading"><div><div class="eyebrow">CONTRÔLE DU STOCK</div><h1 class="page-title">Inventaires</h1><p class="page-sub">Suivez les sessions de comptage physique.</p></div><a class="btn btn-primary" href="{{ route('admin.inventories.create') }}">+ Nouvel inventaire</a></div>
+<div class="card"><div class="card-title">{{ $inventories->total() }} inventaire(s)</div><div class="table-wrap"><table><thead><tr><th>Référence</th><th>Nom</th><th>Créé par</th><th>Articles comptés</th><th>Statut</th><th>Date</th></tr></thead><tbody>@forelse($inventories as $inventory)<tr><td class="mono"><a href="{{ route('admin.inventories.show', $inventory) }}">{{ $inventory->reference }}</a></td><td><strong>{{ $inventory->name }}</strong></td><td>{{ $inventory->user?->name ?? '—' }}</td><td>{{ $inventory->items_count }}</td><td>@if($inventory->status === 'in_progress')<span class="badge pending">En cours</span>@else<span class="badge active">Validé</span>@endif</td><td class="muted">{{ $inventory->created_at->format('d/m/Y H:i') }}</td></tr>@empty<tr><td colspan="6" class="table-empty">Aucun inventaire.</td></tr>@endforelse</tbody></table></div>{{ $inventories->links() }}</div>
+@endsection
